@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartEdu Access | Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-logo">
+                S
+            </div>
+
+            <div>
+                <strong>SmartEdu</strong>
+                <span>ACCESS</span>
+            </div>
+        </div>
+
+        <div class="workspace">
+            <div class="workspace-icon">M</div>
+
+            <div>
+                <small>INSTITUIÇÃO</small>
+                <strong>SmartEdu Campus</strong>
+            </div>
+
+            <span>⌄</span>
+        </div>
+
+        <nav>
+
+            <div class="nav-label">PRINCIPAL</div>
+
+            <a href="#" class="nav-item active">
+                <span>⌂</span>
+                <strong>Dashboard</strong>
+            </a>
+
+            <a href="#" class="nav-item">
+                <span>◈</span>
+                <strong>Analytics</strong>
+            </a>
+
+            <div class="nav-label">GESTÃO</div>
+
+            <a href="#" class="nav-item">
+                <span>♙</span>
+                <strong>Estudantes</strong>
+                <b>1.248</b>
+            </a>
+
+            <a href="#" class="nav-item">
+                <span>♟</span>
+                <strong>Professores</strong>
+                <b>86</b>
+            </a>
+
+            <a href="#" class="nav-item">
+                <span>▣</span>
+                <strong>Cartões RFID</strong>
+            </a>
+
+            <a href="#" class="nav-item">
+                <span>⌂</span>
+                <strong>Salas</strong>
+            </a>
+
+            <div class="nav-label">INFRAESTRUTURA</div>
+
+            <a href="#" class="nav-item">
+                <span>⌁</span>
+                <strong>Dispositivos IoT</strong>
+                <i class="online-mini"></i>
+            </a>
+
+            <a href="#" class="nav-item">
+                <span>◉</span>
+                <strong>Acessos</strong>
+            </a>
+
+            <a href="#" class="nav-item">
+                <span>◷</span>
+                <strong>Presenças</strong>
+            </a>
+
+            <div class="nav-label">SISTEMA</div>
+
+            <a href="#" class="nav-item">
+                <span>▤</span>
+                <strong>Relatórios</strong>
+            </a>
+
+            <a href="#" class="nav-item">
+                <span>⚙</span>
+                <strong>Configurações</strong>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="system-mini">
+                <span class="pulse"></span>
+
+                <div>
+                    <strong>Sistema operacional</strong>
+                    <small>Todos os serviços online</small>
+                </div>
+            </div>
+
+            <div class="user-mini">
+                <div class="avatar">A</div>
+
+                <div>
+                    <strong>Administrador</strong>
+                    <small>Super Admin</small>
+                </div>
+
+                <span>⋮</span>
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <div class="breadcrumbs">
+                <span>SmartEdu</span>
+                <b>/</b>
+                <strong>Dashboard</strong>
+            </div>
+
+            <div class="top-actions">
+
+                <button class="search">
+                    <span>⌕</span>
+                    Pesquisar
+                    <kbd>CTRL K</kbd>
+                </button>
+
+                <button class="icon-button notification">
+                    ◌
+                    <i></i>
+                </button>
+
+                <div class="top-avatar">
+                    A
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- HEADER -->
+            <section class="page-heading">
+
+                <div>
+                    <div class="live-label">
+                        <span></span>
+                        SISTEMA ONLINE
+                    </div>
+
+                    <h1>Olá, Administrador<span>.</span></h1>
+
+                    <p>
+                        Aqui está o estado atual da sua infraestrutura SmartEdu.
+                    </p>
+                </div>
+
+                <div class="date-box">
+                    <span>HOJE</span>
+                    <strong>26 SET 2026</strong>
+                </div>
+
+            </section>
+
+
+            <!-- HERO -->
+            <section class="hero">
+
+                <div class="hero-grid"></div>
+
+                <div class="hero-content">
+
+                    <div class="hero-tag">
+                        SMARTEDU ACCESS CORE
+                    </div>
+
+                    <h2>
+                        Inteligência que
+                        <span>protege.</span>
+                    </h2>
+
+                    <p>
+                        Gestão inteligente de acesso, presença,
+                        RFID e dispositivos IoT numa única plataforma.
+                    </p>
+
+                    <div class="hero-buttons">
+                        <button class="primary-button">
+                            Abrir monitorização
+                            <span>→</span>
+                        </button>
+
+                        <button class="secondary-button">
+                            Ver actividade
+                        </button>
+                    </div>
+
+                </div>
+
+
+                <!-- CORE -->
+                <div class="core-visual">
+
+                    <div class="core-ring ring-1"></div>
+                    <div class="core-ring ring-2"></div>
+                    <div class="core-ring ring-3"></div>
+
+                    <div class="core-orbit orbit-1"></div>
+                    <div class="core-orbit orbit-2"></div>
+
+                    <div class="core">
+                        <strong>SA</strong>
+                        <span>CORE</span>
+                    </div>
+
+                    <div class="core-node node-1">
+                        RFID
+                    </div>
+
+                    <div class="core-node node-2">
+                        IoT
+                    </div>
+
+                    <div class="core-node node-3">
+                        API
+                    </div>
+
+                    <div class="core-node node-4">
+                        DB
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- STATS -->
+            <section class="stats">
+
+                <article class="stat">
+
+                    <div class="stat-top">
+                        <span>ESTUDANTES</span>
+                        <div class="stat-icon blue">♙</div>
+                    </div>
+
+                    <strong>1,248</strong>
+
+                    <div class="stat-bottom">
+                        <span class="positive">↑ 12.4%</span>
+                        <small>vs. mês anterior</small>
+                    </div>
+
+                </article>
+
+
+                <article class="stat">
+
+                    <div class="stat-top">
+                        <span>PROFESSORES</span>
+                        <div class="stat-icon purple">♟</div>
+                    </div>
+
+                    <strong>86</strong>
+
+                    <div class="stat-bottom">
+                        <span class="positive">↑ 4.8%</span>
+                        <small>vs. mês anterior</small>
+                    </div>
+
+                </article>
+
+
+                <article class="stat">
+
+                    <div class="stat-top">
+                        <span>CARTÕES RFID</span>
+                        <div class="stat-icon cyan">▣</div>
+                    </div>
+
+                    <strong>1,176</strong>
+
+                    <div class="stat-bottom">
+                        <span class="positive">98.2%</span>
+                        <small>activos</small>
+                    </div>
+
+                </article>
+
+
+                <article class="stat">
+
+                    <div class="stat-top">
+                        <span>DISPOSITIVOS</span>
+                        <div class="stat-icon green">⌁</div>
+                    </div>
+
+                    <strong>24</strong>
+
+                    <div class="stat-bottom">
+                        <span class="online-text">
+                            ● 24 online
+                        </span>
+                        <small>rede IoT</small>
+                    </div>
+
+                </article>
+
+            </section>
+
+
+            <!-- GRID -->
+            <section class="dashboard-grid">
+
+
+                <!-- ACCESS -->
+                <article class="panel access-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <small>MONITORIZAÇÃO</small>
+                            <h3>Acessos em tempo real</h3>
+                        </div>
+
+                        <div class="live">
+                            <span></span>
+                            LIVE
+                        </div>
+
+                    </div>
+
+
+                    <div class="access-list">
+
+                        <div class="access-row">
+
+                            <div class="person-avatar blue-avatar">
+                                LM
+                            </div>
+
+                            <div class="person">
+                                <strong>Luis Manuel</strong>
+                                <small>STU-2026-001 · Estudante</small>
+                            </div>
+
+                            <div class="room">
+                                <small>PORTA</small>
+                                <strong>LAB 01</strong>
+                            </div>
+
+                            <div class="time">
+                                <strong>08:42</strong>
+                                <small>Entrada</small>
+                            </div>
+
+                            <div class="approved">
+                                ✓
+                            </div>
+
+                        </div>
+
+
+                        <div class="access-row">
+
+                            <div class="person-avatar purple-avatar">
+                                AC
+                            </div>
+
+                            <div class="person">
+                                <strong>Ana Cristina</strong>
+                                <small>TEC-2026-014 · Professora</small>
+                            </div>
+
+                            <div class="room">
+                                <small>PORTA</small>
+                                <strong>LAB 02</strong>
+                            </div>
+
+                            <div class="time">
+                                <strong>08:39</strong>
+                                <small>Entrada</small>
+                            </div>
+
+                            <div class="approved">
+                                ✓
+                            </div>
+
+                        </div>
+
+
+                        <div class="access-row">
+
+                            <div class="person-avatar cyan-avatar">
+                                PA
+                            </div>
+
+                            <div class="person">
+                                <strong>Pedro Alberto</strong>
+                                <small>STU-2026-021 · Estudante</small>
+                            </div>
+
+                            <div class="room">
+                                <small>PORTA</small>
+                                <strong>LAB 03</strong>
+                            </div>
+
+                            <div class="time">
+                                <strong>08:35</strong>
+                                <small>Entrada</small>
+                            </div>
+
+                            <div class="approved">
+                                ✓
+                            </div>
+
+                        </div>
+
+
+                        <div class="access-row denied-row">
+
+                            <div class="person-avatar red-avatar">
+                                ?
+                            </div>
+
+                            <div class="person">
+                                <strong>Cartão desconhecido</strong>
+                                <small>UID 8A:29:4F:91 · Não registado</small>
+                            </div>
+
+                            <div class="room">
+                                <small>PORTA</small>
+                                <strong>ENTRADA</strong>
+                            </div>
+
+                            <div class="time">
+                                <strong>08:31</strong>
+                                <small>Negado</small>
+                            </div>
+
+                            <div class="denied">
+                                !
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <button class="panel-footer-button">
+                        Ver histórico completo →
+                    </button>
+
+                </article>
+
+
+                <!-- SYSTEM -->
+                <article class="panel system-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <small>INFRAESTRUTURA</small>
+                            <h3>Estado do sistema</h3>
+                        </div>
+
+                        <span class="status-online">
+                            ONLINE
+                        </span>
+
+                    </div>
+
+
+                    <div class="health">
+
+                        <div class="health-circle">
+                            <div>
+                                <strong>98</strong>
+                                <small>%</small>
+                            </div>
+                        </div>
+
+                        <div>
+                            <strong>Sistema saudável</strong>
+                            <p>
+                                Todos os serviços principais
+                                estão operacionais.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="services">
+
+                        <div>
+                            <span>
+                                <i></i>
+                                API Core Services
+                            </span>
+
+                            <strong>ONLINE</strong>
+                        </div>
+
+                        <div>
+                            <span>
+                                <i></i>
+                                RFID Gateway
+                            </span>
+
+                            <strong>ONLINE</strong>
+                        </div>
+
+                        <div>
+                            <span>
+                                <i></i>
+                                IoT Device Network
+                            </span>
+
+                            <strong>ONLINE</strong>
+                        </div>
+
+                        <div>
+                            <span>
+                                <i class="warning"></i>
+                                Notifications
+                            </span>
+
+                            <strong class="yellow">98%</strong>
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+            </section>
+
+
+            <!-- ANALYTICS -->
+            <section class="dashboard-grid second-grid">
+
+
+                <article class="panel chart-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <small>ANALYTICS</small>
+                            <h3>Actividade de acessos</h3>
+                        </div>
+
+                        <select>
+                            <option>Últimos 7 dias</option>
+                            <option>Últimos 30 dias</option>
+                            <option>Este semestre</option>
+                        </select>
+
+                    </div>
+
+
+                    <div class="chart">
+
+                        <div class="chart-values">
+                            <span>100</span>
+                            <span>80</span>
+                            <span>60</span>
+                            <span>40</span>
+                            <span>20</span>
+                            <span>0</span>
+                        </div>
+
+                        <div class="chart-main">
+
+                            <div class="chart-lines">
+                                <i></i>
+                                <i></i>
+                                <i></i>
+                                <i></i>
+                                <i></i>
+                                <i></i>
+                            </div>
+
+                            <div class="bars">
+
+                                <div style="height:52%">
+                                    <b></b>
+                                    <span>SEG</span>
+                                </div>
+
+                                <div style="height:68%">
+                                    <b></b>
+                                    <span>TER</span>
+                                </div>
+
+                                <div style="height:58%">
+                                    <b></b>
+                                    <span>QUA</span>
+                                </div>
+
+                                <div style="height:83%">
+                                    <b></b>
+                                    <span>QUI</span>
+                                </div>
+
+                                <div style="height:72%">
+                                    <b></b>
+                                    <span>SEX</span>
+                                </div>
+
+                                <div style="height:91%">
+                                    <b></b>
+                                    <span>SÁB</span>
+                                </div>
+
+                                <div style="height:61%">
+                                    <b></b>
+                                    <span>DOM</span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <!-- QUICK -->
+                <article class="panel quick-panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <small>ACÇÕES</small>
+                            <h3>Acesso rápido</h3>
+                        </div>
+                    </div>
+
+
+                    <div class="quick-grid">
+
+                        <button>
+                            <span>♙</span>
+                            <div>
+                                <strong>Novo estudante</strong>
+                                <small>Registar estudante</small>
+                            </div>
+                            <b>→</b>
+                        </button>
+
+                        <button>
+                            <span>▣</span>
+                            <div>
+                                <strong>Novo cartão</strong>
+                                <small>Registar RFID</small>
+                            </div>
+                            <b>→</b>
+                        </button>
+
+                        <button>
+                            <span>⌁</span>
+                            <div>
+                                <strong>Dispositivos</strong>
+                                <small>Monitorizar IoT</small>

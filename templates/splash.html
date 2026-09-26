@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="pt-MZ">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <meta
+        name="theme-color"
+        content="#030712"
+    >
+
+    <title>SmartEdu Access</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/splash.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<div class="splash" id="splash">
+
+
+    <!-- FUNDO DIGITAL -->
+
+    <div class="grid"></div>
+
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    <div class="glow glow-3"></div>
+
+
+    <!-- PARTÍCULAS -->
+
+    <div class="particles">
+
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+
+    </div>
+
+
+    <!-- CONTEÚDO -->
+
+    <main class="intro">
+
+
+        <div class="system-tag">
+
+            <span class="pulse"></span>
+
+            SMARTEDU ACCESS
+
+            <span class="status">
+                INITIALIZING
+            </span>
+
+        </div>
+
+
+        <!-- LOGO -->
+
+        <div class="logo-stage">
+
+            <div class="orbit orbit-1"></div>
+            <div class="orbit orbit-2"></div>
+            <div class="orbit orbit-3"></div>
+
+            <div class="logo-core">
+
+                <span class="logo-letter">
+                    S
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- MARCA -->
+
+        <div class="brand">
+
+            <span class="brand-small">
+                SMART INSTITUTION PLATFORM
+            </span>
+
+            <h1>
+                SmartEdu
+                <span>Access</span>
+            </h1>
+
+        </div>
+
+
+        <!-- LINHA -->
+
+        <div class="separator">
+
+            <span></span>
+
+            <b>ENGINEERED BY</b>
+
+            <span></span>
+
+        </div>
+
+
+        <!-- EQUIPA -->
+
+        <section class="team">
+
+            <div
+                class="person person-1"
+                data-name="MELO IA"
+            >
+                <span class="person-index">
+                    01
+                </span>
+
+                <strong>
+                    MELO IA
+                </strong>
+
+                <small>
+                    INTELLIGENCE
+                </small>
+            </div>
+
+
+            <div
+                class="person person-2"
+                data-name="LIPA"
+            >
+                <span class="person-index">
+                    02
+                </span>
+
+                <strong>
+                    LIPA
+                </strong>
+
+                <small>
+                    DEVELOPMENT
+                </small>
+            </div>
+
+
+            <div
+                class="person person-3"
+                data-name="SOLANGE"
+            >
+                <span class="person-index">
+                    03
+                </span>
+
+                <strong>
+                    SOLANGE
+                </strong>
+
+                <small>
+                    DEVELOPMENT
+                </small>
+            </div>
+
+
+            <div
+                class="person person-4"
+                data-name="MELLO"
+            >
+                <span class="person-index">
+                    04
+                </span>
+
+                <strong>
+                    MELLO
+                </strong>
+
+                <small>
+                    TECHNOLOGY
+                </small>
+            </div>
+
+        </section>
+
+
+        <!-- FRASE -->
+
+        <div class="tagline">
+
+            <span>
+                INTELLIGENCE
+            </span>
+
+            <i>×</i>
+
+            <span>
+                TECHNOLOGY
+            </span>
+
+            <i>×</i>
+
+            <span>
+                ACCESS
+            </span>
+
+        </div>
+
+
+        <!-- PROGRESSO -->
+
+        <div class="loading">
+
+            <div class="loading-top">
+
+                <span>
+                    INITIALIZING SMARTEDU CORE
+                </span>
+
+                <strong id="percent">
+                    00%
+                </strong>
+
+            </div>
+
+            <div class="loading-track">
+
+                <div
+                    class="loading-bar"
+                    id="loadingBar"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+    </main>
+
+
+    <!-- RODAPÉ -->
+
+    <footer class="splash-footer">
+
+        <span>
+            SMARTEDU ACCESS
+        </span>
+
+        <span>
+            SECURE INSTITUTIONAL PLATFORM
+        </span>
+
+        <span>
+            v{{ app_version or "1.0.0" }}
+        </span>
+
+    </footer>
+
+</div>
+
+
+<script>
+
+const bar =
+    document.getElementById("loadingBar");
+
+const percent =
+    document.getElementById("percent");
+
+const splash =
+    document.getElementById("splash");
+
+let progress = 0;
+
+
+const timer = setInterval(() => {
+
+    progress +=
+        Math.floor(
+            Math.random() * 4
+        ) + 1;
+
+    if (progress >= 100) {
+
+        progress = 100;
+
+        clearInterval(timer);
+
+        setTimeout(() => {
+
+            splash.classList.add(
+                "complete"
+            );
+
+        }, 450);
+
+    }
+
+    bar.style.width =
+        progress + "%";
+
+    percent.textContent =
+        String(progress).padStart(
+            2,
+            "0"
+        ) + "%";
+
+}, 55);
+
+
+setTimeout(() => {
+
+    window.location.href = "/login";
+
+}, 4800);
+
+</script>
+
+</body>
+
+</html>
