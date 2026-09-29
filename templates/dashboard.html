@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartEdu Access — Dashboard</title>
+
+    <meta
+        name="description"
+        content="SmartEdu Access — Plataforma inteligente de gestão escolar, RFID e controlo de acessos."
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/dashboard.css') }}"
+    >
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"
+        defer
+    ></script>
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="sidebar-logo">
+                S
+            </div>
+
+            <div class="sidebar-brand-text">
+                <strong>SmartEdu</strong>
+                <span>Access Platform</span>
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <div class="nav-section">
+
+                <div class="nav-section-title">
+                    Principal
+                </div>
+
+                <a
+                    href="/dashboard"
+                    class="nav-link active"
+                >
+                    <span class="nav-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+            </div>
+
+
+            <div class="nav-section">
+
+                <div class="nav-section-title">
+                    Gestão
+                </div>
+
+                <a
+                    href="/students"
+                    class="nav-link"
+                >
+                    <span class="nav-icon">◉</span>
+                    <span>Estudantes</span>
+                </a>
+
+                <a
+                    href="/teachers"
+                    class="nav-link"
+                >
+                    <span class="nav-icon">♙</span>
+                    <span>Professores</span>
+                </a>
+
+                <a
+                    href="/cards"
+                    class="nav-link"
+                >
+                    <span class="nav-icon">▣</span>
+                    <span>Cartões RFID</span>
+                </a>
+
+                <a
+                    href="/devices"
+                    class="nav-link"
+                >
+                    <span class="nav-icon">⌁</span>
+                    <span>Dispositivos</span>
+                </a>
+
+            </div>
+
+
+            <div class="nav-section">
+
+                <div class="nav-section-title">
+                    Monitorização
+                </div>
+
+                <a
+                    href="/attendance"
+                    class="nav-link"
+                >
+                    <span class="nav-icon">✓</span>
+                    <span>Presenças</span>
+                </a>
+
+                <a
+                    href="/access"
+                    class="nav-link"
+                >
+                    <span class="nav-icon">◌</span>
+                    <span>Histórico RFID</span>
+                </a>
+
+                <a
+                    href="/reports"
+                    class="nav-link"
+                >
+                    <span class="nav-icon">▥</span>
+                    <span>Relatórios</span>
+                </a>
+
+            </div>
+
+
+            <div class="nav-section">
+
+                <div class="nav-section-title">
+                    Sistema
+                </div>
+
+                <a
+                    href="/settings"
+                    class="nav-link"
+                >
+                    <span class="nav-icon">⚙</span>
+                    <span>Definições</span>
+                </a>
+
+            </div>
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <div class="sidebar-user">
+
+                <div class="user-avatar" id="sidebarAvatar">
+                    A
+                </div>
+
+                <div class="user-info">
+
+                    <strong id="sidebarUsername">
+                        Administrador
+                    </strong>
+
+                    <span id="sidebarRole">
+                        Administrador
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+         ===================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             TOPBAR
+             ================================================= -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <div>
+
+                    <div class="topbar-title">
+                        SmartEdu Access
+                    </div>
+
+                    <div class="topbar-subtitle">
+                        Sistema de gestão e controlo de acessos
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <div
+                    class="live-indicator"
+                    title="Sistema online"
+                >
+                    Sistema online
+                </div>
+
+                <button
+                    class="topbar-button"
+                    id="refreshDashboard"
+                    title="Atualizar dashboard"
+                    type="button"
+                >
+                    ↻
+                </button>
+
+                <button
+                    class="topbar-button"
+                    id="logoutButton"
+                    title="Terminar sessão"
+                    type="button"
+                >
+                    ⇥
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             PAGE HEADER
+             ================================================= -->
+
+        <section class="page-header dashboard-header">
+
+            <div>
+
+                <h1>
+                    Bom dia, <span id="welcomeName">Administrador</span>.
+                </h1>
+
+                <p>
+                    Visão geral da instituição e monitorização
+                    dos acessos em tempo real.
+                </p>
+
+            </div>
+
+
+            <div class="page-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    id="refreshButton"
+                >
+                    ↻ Atualizar
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="historyButton"
+                >
+                    ◌ Ver histórico
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             KPI CARDS
+             ================================================= -->
+
+        <section
+            class="stats-grid dashboard-stats"
+            id="statsGrid"
+        >
+
+            <article class="stat-card">
+
+                <div class="stat-top">
+
+                    <div>
+                        <span class="stat-label">
+                            Estudantes
+                        </span>
+
+                        <strong
+                            class="stat-value"
+                            id="studentsValue"
+                        >
+                            —
+                        </strong>
+                    </div>
+
+                    <div class="stat-icon">
+                        ◉
+                    </div>
+
+                </div>
+
+                <div class="stat-change">
+                    Registos activos
+                </div>
+
+            </article>
+
+
+            <article class="stat-card">
+
+                <div class="stat-top">
+
+                    <div>
+                        <span class="stat-label">
+                            Professores
+                        </span>
+
+                        <strong
+                            class="stat-value"
+                            id="teachersValue"
+                        >
+                            —
+                        </strong>
+                    </div>
+
+                    <div class="stat-icon">
+                        ♙
+                    </div>
+
+                </div>
+
+                <div class="stat-change">
+                    Corpo docente
+                </div>
+
+            </article>
+
+
+            <article class="stat-card success">
+
+                <div class="stat-top">
+
+                    <div>
+                        <span class="stat-label">
+                            Cartões RFID
+                        </span>
+
+                        <strong
+                            class="stat-value"
+                            id="cardsValue"
+                        >
+                            —
+                        </strong>
+                    </div>
+
+                    <div class="stat-icon">
+                        ▣
+                    </div>
+
+                </div>
+
+                <div class="stat-change positive">
+                    Cartões registados
+                </div>
+
+            </article>
+
+
+            <article class="stat-card warning">
+
+                <div class="stat-top">
+
+                    <div>
+                        <span class="stat-label">
+                            Eventos de acesso
+                        </span>
+
+                        <strong
+                            class="stat-value"
+                            id="accessValue"
+                        >
+                            —
+                        </strong>
+                    </div>
+
+                    <div class="stat-icon">
+                        ◌
+                    </div>
+
+                </div>
+
+                <div class="stat-change">
+                    Histórico persistente
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- =================================================
+             MAIN ANALYTICS
+             ================================================= -->
+
+        <section class="dashboard-grid">
+
+            <!-- ACCESS TIMELINE -->
+
+            <article class="panel chart-card">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <div class="panel-title">
+                            Actividade de acessos
+                        </div>
+
+                        <div class="panel-subtitle">
+                            Eventos registados no SmartEdu
+                        </div>
+
+                    </div>
+
+                    <span class="badge badge-info">
+                        LIVE DATA
+                    </span>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div
+                        class="chart-container"
+                        style="height: 300px;"
+                    >
+
+                        <canvas
+                            id="accessChart"
+                        ></canvas>
+
+                        <div
+                            id="accessChartEmpty"
+                            class="chart-placeholder"
+                            style="display:none;"
+                        >
+                            Ainda não existem eventos suficientes
+                            para apresentar o gráfico.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- ACCESS SUMMARY -->
+
+            <article class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <div class="panel-title">
+                            Estado dos acessos
+                        </div>
+
+                        <div class="panel-subtitle">
+                            Autorizados e recusados
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div
+                        class="chart-container"
+                        style="height: 260px;"
+                    >
+
+                        <canvas
+                            id="resultChart"
+                        ></canvas>
+
+                    </div>
+
+
+                    <div
+                        style="
+                            display:grid;
+                            grid-template-columns:1fr 1fr;
+                            gap:10px;
+                            margin-top:15px;
+                        "
+                    >
+
+                        <div
+                            style="
+                                padding:13px;
+                                border-radius:12px;
+                                background:#ecfdf3;
+                            "
+                        >
+
+                            <div
+                                style="
+                                    color:#15803d;
+                                    font-size:9px;
+                                    font-weight:800;
+                                    text-transform:uppercase;
+                                "
+                            >
+                                Autorizados
+                            </div>
+
+                            <strong
+                                id="grantedValue"
+                                style="
+                                    display:block;
+                                    margin-top:6px;
+                                    font-size:22px;
+                                    color:#166534;
+                                "
+                            >
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div
+                            style="
+                                padding:13px;
+                                border-radius:12px;
+                                background:#fef2f2;
+                            "
+                        >
+
+                            <div
+                                style="
+                                    color:#b91c1c;
+                                    font-size:9px;
+                                    font-weight:800;
+                                    text-transform:uppercase;
+                                "
+                            >
+                                Recusados
+                            </div>
+
+                            <strong
+                                id="deniedValue"
+                                style="
+                                    display:block;
+                                    margin-top:6px;
+                                    font-size:22px;
+                                    color:#991b1b;
+                                "
+                            >
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- =================================================
+             SECOND ANALYTICS
+             ================================================= -->
+
+        <section class="dashboard-grid">
+
+            <!-- ENTRY EXIT -->
+
+            <article class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <div class="panel-title">
+                            Entrada vs saída
+                        </div>
+
+                        <div class="panel-subtitle">
+                            Distribuição dos movimentos RFID
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div
+                        class="chart-container"
+                        style="height:240px;"
+                    >
+
+                        <canvas
+                            id="directionChart"
+                        ></canvas>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- DEVICE STATUS -->
+
+            <article class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <div class="panel-title">
+                            Estado da infraestrutura
+                        </div>
+
+                        <div class="panel-subtitle">
+                            Dispositivos SmartEdu
+                        </div>
+
+                    </div>
+
+                    <span
+                        class="live-indicator"
+                    >
+                        Monitorizado
+                    </span>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div
+                        class="device-list"
+                        id="deviceList"
+                    >
+
+                        <div class="empty-state">
+
+                            <div class="empty-state-icon">
+                                ⌁
+                            </div>
+
+                            <strong>
+                                A carregar dispositivos
+                            </strong>
+
+                            <span>
+                                A obter o estado actual da infraestrutura.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- =================================================
+             RFID LIVE + RECENT HISTORY
+             ================================================= -->
+
+        <section class="dashboard-grid-wide">
+
+
+            <!-- RFID LIVE -->
+
+            <article class="panel rfid-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <div class="panel-title">
+                            Actividade RFID em tempo real
+                        </div>
+
+                        <div class="panel-subtitle">
+                            Últimos eventos processados pelo sistema
+                        </div>
+
+                    </div>
+
+                    <div class="rfid-status">
+
+                        <span class="rfid-status-dot"></span>
+
+                        RFID LIVE
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div
+                        class="activity-list"
+                        id="liveActivity"
+                    >
+
+                        <div class="empty-state">
+
+                            <strong>
+                                A aguardar eventos RFID
+                            </strong>
+
+                            <span>
+                                Os novos acessos aparecerão aqui
+                                automaticamente.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- RECENT -->
+
+            <article class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <div class="panel-title">
+                            Histórico recente
+                        </div>
+
+                        <div class="panel-subtitle">
+                            Eventos mais recentes
+                        </div>
+
+                    </div>
+
+                    <a
+                        href="/access"
+                        class="btn btn-secondary btn-sm"
+                    >
+                        Ver tudo
+                    </a>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div
+                        class="activity-list"
+                        id="recentActivity"
+                    >
+
+                        <div class="empty-state">
+
+                            <strong>
+                                Sem histórico
+                            </strong>
+
+                            <span>
+                                Os eventos RFID serão apresentados aqui.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- =================================================
+             SYSTEM SUMMARY
+             ================================================= -->
+
+        <section
+            class="panel"
+            style="margin-top:18px;"
+        >
+
+            <div class="panel-header">
+
+                <div>
+
+                    <div class="panel-title">
+                        Estado geral do SmartEdu
+                    </div>
+
+                    <div class="panel-subtitle">
+                        Resumo operacional da instituição
+                    </div>
+
+                </div>
+
+                <span
+                    class="badge badge-success"
+                >
+                    SISTEMA OPERACIONAL
+                </span>
+
+            </div>
+
+
+            <div class="panel-body">
+
+                <div
+                    style="
+                        display:grid;
+                        grid-template-columns:
+                            repeat(4, minmax(0, 1fr));
+                        gap:14px;
+                    "
+                >
+
+                    <div
+                        style="
+                            padding:16px;
+                            border:1px solid #eef2f7;
+                            border-radius:13px;
+                            background:#f8fafc;
+                        "
+                    >
+
+                        <span class="stat-label">
+                            Total de acessos
+                        </span>
+
+                        <strong
+                            id="summaryTotal"
+                            style="
+                                display:block;
+                                margin-top:8px;
+                                font-size:20px;
+                                color:#0f172a;
+                            "
+                        >
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div
+                        style="
+                            padding:16px;
+                            border:1px solid #eef2f7;
+                            border-radius:13px;
+                            background:#f8fafc;
+                        "
+                    >
+
+                        <span class="stat-label">
+                            Taxa autorização
+                        </span>
+
+                        <strong
+                            id="summaryRate"
+                            style="
+                                display:block;
+                                margin-top:8px;
+                                font-size:20px;
+                                color:#0f172a;
+                            "
+                        >
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div
+                        style="
+                            padding:16px;
+                            border:1px solid #eef2f7;
+                            border-radius:13px;
+                            background:#f8fafc;
+                        "
+                    >
+
+                        <span class="stat-label">
+                            Dispositivos
+                        </span>
+
+                        <strong
+                            id="summaryDevices"
+                            style="
+                                display:block;
+                                margin-top:8px;
+                                font-size:20px;
+                                color:#0f172a;
+                            "
+                        >
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div
+                        style="
+                            padding:16px;
+                            border:1px solid #eef2f7;
+                            border-radius:13px;
+                            background:#f8fafc;
+                        "
+                    >
+
+                        <span class="stat-label">
+                            Presenças
+                        </span>
+
+                        <strong

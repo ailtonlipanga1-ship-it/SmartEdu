@@ -1,26 +1,75 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-MZ">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>SmartEdu Access | Dashboard</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/main.css') }}"
+    >
+
+    <style>
+        .dashboard-loading {
+            opacity: .55;
+            pointer-events: none;
+        }
+
+        .data-live {
+            position: relative;
+        }
+
+        .data-live::after {
+            content: "";
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            margin-left: 6px;
+            border-radius: 50%;
+            background: #22c55e;
+            vertical-align: middle;
+        }
+
+        .empty-access {
+            padding: 30px;
+            text-align: center;
+            opacity: .65;
+        }
+
+        .error-box {
+            display: none;
+            margin-bottom: 20px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            background: #fee2e2;
+            color: #991b1b;
+            font-size: 14px;
+        }
+
+        .activity-bar {
+            transition: height .35s ease;
+        }
+
+        .nav-item {
+            text-decoration: none;
+        }
+
+        button {
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
 
 <div class="app">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
 
         <div class="brand">
-            <div class="brand-logo">
-                S
-            </div>
+            <div class="brand-logo">S</div>
 
             <div>
                 <strong>SmartEdu</strong>
@@ -33,7 +82,9 @@
 
             <div>
                 <small>INSTITUIÇÃO</small>
-                <strong>SmartEdu Campus</strong>
+                <strong id="institution-name">
+                    SmartEdu Campus
+                </strong>
             </div>
 
             <span>⌄</span>
@@ -43,66 +94,70 @@
 
             <div class="nav-label">PRINCIPAL</div>
 
-            <a href="#" class="nav-item active">
+            <a href="/dashboard/" class="nav-item active">
                 <span>⌂</span>
                 <strong>Dashboard</strong>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/dashboard/#analytics" class="nav-item">
                 <span>◈</span>
                 <strong>Analytics</strong>
             </a>
 
             <div class="nav-label">GESTÃO</div>
 
-            <a href="#" class="nav-item">
+            <a href="/api/v1/students/" class="nav-item">
                 <span>♙</span>
                 <strong>Estudantes</strong>
-                <b>1.248</b>
+                <b id="nav-students">0</b>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/api/v1/teachers/" class="nav-item">
                 <span>♟</span>
                 <strong>Professores</strong>
-                <b>86</b>
+                <b id="nav-teachers">0</b>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/api/v1/cards/" class="nav-item">
                 <span>▣</span>
                 <strong>Cartões RFID</strong>
+                <b id="nav-cards">0</b>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/dashboard/#rooms" class="nav-item">
                 <span>⌂</span>
                 <strong>Salas</strong>
+                <b id="nav-rooms">0</b>
             </a>
 
             <div class="nav-label">INFRAESTRUTURA</div>
 
-            <a href="#" class="nav-item">
+            <a href="/monitoring/" class="nav-item">
                 <span>⌁</span>
                 <strong>Dispositivos IoT</strong>
                 <i class="online-mini"></i>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/api/v1/access/" class="nav-item">
                 <span>◉</span>
                 <strong>Acessos</strong>
+                <b id="nav-access">0</b>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/dashboard/#attendance" class="nav-item">
                 <span>◷</span>
                 <strong>Presenças</strong>
+                <b id="nav-attendance">0</b>
             </a>
 
             <div class="nav-label">SISTEMA</div>
 
-            <a href="#" class="nav-item">
+            <a href="/api/v1/reports/overview" class="nav-item">
                 <span>▤</span>
                 <strong>Relatórios</strong>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/dashboard/#settings" class="nav-item">
                 <span>⚙</span>
                 <strong>Configurações</strong>
             </a>
@@ -116,16 +171,25 @@
 
                 <div>
                     <strong>Sistema operacional</strong>
-                    <small>Todos os serviços online</small>
+                    <small id="system-message">
+                        A carregar estado...
+                    </small>
                 </div>
             </div>
 
             <div class="user-mini">
-                <div class="avatar">A</div>
+                <div class="avatar" id="user-avatar">
+                    A
+                </div>
 
                 <div>
-                    <strong>Administrador</strong>
-                    <small>Super Admin</small>
+                    <strong id="user-name">
+                        Administrador
+                    </strong>
+
+                    <small id="user-role">
+                        Super Admin
+                    </small>
                 </div>
 
                 <span>⋮</span>
@@ -136,10 +200,8 @@
     </aside>
 
 
-    <!-- MAIN -->
     <main class="main">
 
-        <!-- TOPBAR -->
         <header class="topbar">
 
             <div class="breadcrumbs">
@@ -150,18 +212,25 @@
 
             <div class="top-actions">
 
-                <button class="search">
+                <button
+                    class="search"
+                    type="button"
+                    onclick="focusSearch()"
+                >
                     <span>⌕</span>
                     Pesquisar
                     <kbd>CTRL K</kbd>
                 </button>
 
-                <button class="icon-button notification">
+                <button
+                    class="icon-button notification"
+                    type="button"
+                >
                     ◌
                     <i></i>
                 </button>
 
-                <div class="top-avatar">
+                <div class="top-avatar" id="top-avatar">
                     A
                 </div>
 
@@ -170,34 +239,53 @@
         </header>
 
 
-        <!-- CONTENT -->
         <div class="content">
 
-            <!-- HEADER -->
+            <div
+                id="dashboard-error"
+                class="error-box"
+            >
+                Não foi possível actualizar os dados
+                do Dashboard.
+            </div>
+
+
             <section class="page-heading">
 
                 <div>
+
                     <div class="live-label">
                         <span></span>
                         SISTEMA ONLINE
                     </div>
 
-                    <h1>Olá, Administrador<span>.</span></h1>
+                    <h1>
+                        Olá,
+                        <span id="greeting-name">
+                            Administrador
+                        </span>.
+                    </h1>
 
                     <p>
-                        Aqui está o estado atual da sua infraestrutura SmartEdu.
+                        Aqui está o estado actual da sua
+                        infraestrutura SmartEdu.
                     </p>
+
                 </div>
 
                 <div class="date-box">
+
                     <span>HOJE</span>
-                    <strong>26 SET 2026</strong>
+
+                    <strong id="current-date">
+                        --
+                    </strong>
+
                 </div>
 
             </section>
 
 
-            <!-- HERO -->
             <section class="hero">
 
                 <div class="hero-grid"></div>
@@ -214,25 +302,35 @@
                     </h2>
 
                     <p>
-                        Gestão inteligente de acesso, presença,
-                        RFID e dispositivos IoT numa única plataforma.
+                        Gestão inteligente de acesso,
+                        presença, RFID e dispositivos
+                        IoT numa única plataforma.
                     </p>
 
                     <div class="hero-buttons">
-                        <button class="primary-button">
+
+                        <button
+                            class="primary-button"
+                            type="button"
+                            onclick="window.location.href='/monitoring/'"
+                        >
                             Abrir monitorização
                             <span>→</span>
                         </button>
 
-                        <button class="secondary-button">
+                        <button
+                            class="secondary-button"
+                            type="button"
+                            onclick="window.location.href='/api/v1/access/'"
+                        >
                             Ver actividade
                         </button>
+
                     </div>
 
                 </div>
 
 
-                <!-- CORE -->
                 <div class="core-visual">
 
                     <div class="core-ring ring-1"></div>
@@ -268,7 +366,6 @@
             </section>
 
 
-            <!-- STATS -->
             <section class="stats">
 
                 <article class="stat">
@@ -278,11 +375,20 @@
                         <div class="stat-icon blue">♙</div>
                     </div>
 
-                    <strong>1,248</strong>
+                    <strong
+                        id="stat-students"
+                        class="data-live"
+                    >
+                        0
+                    </strong>
 
                     <div class="stat-bottom">
-                        <span class="positive">↑ 12.4%</span>
-                        <small>vs. mês anterior</small>
+                        <span class="positive">
+                            ● REAL
+                        </span>
+                        <small>
+                            base de dados
+                        </small>
                     </div>
 
                 </article>
@@ -295,11 +401,17 @@
                         <div class="stat-icon purple">♟</div>
                     </div>
 
-                    <strong>86</strong>
+                    <strong id="stat-teachers">
+                        0
+                    </strong>
 
                     <div class="stat-bottom">
-                        <span class="positive">↑ 4.8%</span>
-                        <small>vs. mês anterior</small>
+                        <span class="positive">
+                            ● REAL
+                        </span>
+                        <small>
+                            base de dados
+                        </small>
                     </div>
 
                 </article>
@@ -312,11 +424,20 @@
                         <div class="stat-icon cyan">▣</div>
                     </div>
 
-                    <strong>1,176</strong>
+                    <strong id="stat-cards">
+                        0
+                    </strong>
 
                     <div class="stat-bottom">
-                        <span class="positive">98.2%</span>
-                        <small>activos</small>
+                        <span class="positive">
+                            <span id="stat-card-rate">
+                                0
+                            </span>%
+                        </span>
+
+                        <small>
+                            activos
+                        </small>
                     </div>
 
                 </article>
@@ -329,13 +450,22 @@
                         <div class="stat-icon green">⌁</div>
                     </div>
 
-                    <strong>24</strong>
+                    <strong id="stat-devices">
+                        0
+                    </strong>
 
                     <div class="stat-bottom">
                         <span class="online-text">
-                            ● 24 online
+                            ●
+                            <span id="stat-online">
+                                0
+                            </span>
+                            online
                         </span>
-                        <small>rede IoT</small>
+
+                        <small>
+                            rede IoT
+                        </small>
                     </div>
 
                 </article>
@@ -343,18 +473,17 @@
             </section>
 
 
-            <!-- GRID -->
             <section class="dashboard-grid">
 
-
-                <!-- ACCESS -->
                 <article class="panel access-panel">
 
                     <div class="panel-header">
 
                         <div>
                             <small>MONITORIZAÇÃO</small>
-                            <h3>Acessos em tempo real</h3>
+                            <h3>
+                                Acessos em tempo real
+                            </h3>
                         </div>
 
                         <div class="live">
@@ -365,140 +494,44 @@
                     </div>
 
 
-                    <div class="access-list">
+                    <div
+                        class="access-list"
+                        id="access-list"
+                    >
 
-                        <div class="access-row">
-
-                            <div class="person-avatar blue-avatar">
-                                LM
-                            </div>
-
-                            <div class="person">
-                                <strong>Luis Manuel</strong>
-                                <small>STU-2026-001 · Estudante</small>
-                            </div>
-
-                            <div class="room">
-                                <small>PORTA</small>
-                                <strong>LAB 01</strong>
-                            </div>
-
-                            <div class="time">
-                                <strong>08:42</strong>
-                                <small>Entrada</small>
-                            </div>
-
-                            <div class="approved">
-                                ✓
-                            </div>
-
-                        </div>
-
-
-                        <div class="access-row">
-
-                            <div class="person-avatar purple-avatar">
-                                AC
-                            </div>
-
-                            <div class="person">
-                                <strong>Ana Cristina</strong>
-                                <small>TEC-2026-014 · Professora</small>
-                            </div>
-
-                            <div class="room">
-                                <small>PORTA</small>
-                                <strong>LAB 02</strong>
-                            </div>
-
-                            <div class="time">
-                                <strong>08:39</strong>
-                                <small>Entrada</small>
-                            </div>
-
-                            <div class="approved">
-                                ✓
-                            </div>
-
-                        </div>
-
-
-                        <div class="access-row">
-
-                            <div class="person-avatar cyan-avatar">
-                                PA
-                            </div>
-
-                            <div class="person">
-                                <strong>Pedro Alberto</strong>
-                                <small>STU-2026-021 · Estudante</small>
-                            </div>
-
-                            <div class="room">
-                                <small>PORTA</small>
-                                <strong>LAB 03</strong>
-                            </div>
-
-                            <div class="time">
-                                <strong>08:35</strong>
-                                <small>Entrada</small>
-                            </div>
-
-                            <div class="approved">
-                                ✓
-                            </div>
-
-                        </div>
-
-
-                        <div class="access-row denied-row">
-
-                            <div class="person-avatar red-avatar">
-                                ?
-                            </div>
-
-                            <div class="person">
-                                <strong>Cartão desconhecido</strong>
-                                <small>UID 8A:29:4F:91 · Não registado</small>
-                            </div>
-
-                            <div class="room">
-                                <small>PORTA</small>
-                                <strong>ENTRADA</strong>
-                            </div>
-
-                            <div class="time">
-                                <strong>08:31</strong>
-                                <small>Negado</small>
-                            </div>
-
-                            <div class="denied">
-                                !
-                            </div>
-
+                        <div class="empty-access">
+                            A carregar acessos...
                         </div>
 
                     </div>
 
 
-                    <button class="panel-footer-button">
+                    <button
+                        class="panel-footer-button"
+                        type="button"
+                        onclick="window.location.href='/api/v1/access/'"
+                    >
                         Ver histórico completo →
                     </button>
 
                 </article>
 
 
-                <!-- SYSTEM -->
                 <article class="panel system-panel">
 
                     <div class="panel-header">
 
                         <div>
                             <small>INFRAESTRUTURA</small>
-                            <h3>Estado do sistema</h3>
+                            <h3>
+                                Estado do sistema
+                            </h3>
                         </div>
 
-                        <span class="status-online">
+                        <span
+                            class="status-online"
+                            id="system-status"
+                        >
                             ONLINE
                         </span>
 
@@ -508,18 +541,28 @@
                     <div class="health">
 
                         <div class="health-circle">
+
                             <div>
-                                <strong>98</strong>
+                                <strong id="health-score">
+                                    0
+                                </strong>
+
                                 <small>%</small>
                             </div>
+
                         </div>
 
                         <div>
-                            <strong>Sistema saudável</strong>
-                            <p>
-                                Todos os serviços principais
-                                estão operacionais.
+
+                            <strong id="health-title">
+                                A verificar...
+                            </strong>
+
+                            <p id="health-description">
+                                A verificar o estado
+                                dos serviços.
                             </p>
+
                         </div>
 
                     </div>
@@ -533,7 +576,9 @@
                                 API Core Services
                             </span>
 
-                            <strong>ONLINE</strong>
+                            <strong>
+                                ONLINE
+                            </strong>
                         </div>
 
                         <div>
@@ -542,7 +587,9 @@
                                 RFID Gateway
                             </span>
 
-                            <strong>ONLINE</strong>
+                            <strong id="service-rfid">
+                                ONLINE
+                            </strong>
                         </div>
 
                         <div>
@@ -551,29 +598,37 @@
                                 IoT Device Network
                             </span>
 
-                            <strong>ONLINE</strong>
+                            <strong id="service-iot">
+                                --
+                            </strong>
                         </div>
 
                         <div>
                             <span>
                                 <i class="warning"></i>
-                                Notifications
+                                Acessos negados
                             </span>
 
-                            <strong class="yellow">98%</strong>
+                            <strong
+                                class="yellow"
+                                id="service-denied"
+                            >
+                                0
+                            </strong>
+
                         </div>
 
                     </div>
 
                 </article>
 
-
             </section>
 
 
-            <!-- ANALYTICS -->
-            <section class="dashboard-grid second-grid">
-
+            <section
+                class="dashboard-grid second-grid"
+                id="analytics"
+            >
 
                 <article class="panel chart-panel">
 
@@ -581,13 +636,26 @@
 
                         <div>
                             <small>ANALYTICS</small>
-                            <h3>Actividade de acessos</h3>
+
+                            <h3>
+                                Actividade de acessos
+                            </h3>
                         </div>
 
-                        <select>
-                            <option>Últimos 7 dias</option>
-                            <option>Últimos 30 dias</option>
-                            <option>Este semestre</option>
+                        <select id="activity-period">
+
+                            <option value="7">
+                                Últimos 7 dias
+                            </option>
+
+                            <option value="30">
+                                Últimos 30 dias
+                            </option>
+
+                            <option value="90">
+                                Últimos 90 dias
+                            </option>
+
                         </select>
 
                     </div>
@@ -615,44 +683,10 @@
                                 <i></i>
                             </div>
 
-                            <div class="bars">
-
-                                <div style="height:52%">
-                                    <b></b>
-                                    <span>SEG</span>
-                                </div>
-
-                                <div style="height:68%">
-                                    <b></b>
-                                    <span>TER</span>
-                                </div>
-
-                                <div style="height:58%">
-                                    <b></b>
-                                    <span>QUA</span>
-                                </div>
-
-                                <div style="height:83%">
-                                    <b></b>
-                                    <span>QUI</span>
-                                </div>
-
-                                <div style="height:72%">
-                                    <b></b>
-                                    <span>SEX</span>
-                                </div>
-
-                                <div style="height:91%">
-                                    <b></b>
-                                    <span>SÁB</span>
-                                </div>
-
-                                <div style="height:61%">
-                                    <b></b>
-                                    <span>DOM</span>
-                                </div>
-
-                            </div>
+                            <div
+                                class="bars"
+                                id="activity-bars"
+                            ></div>
 
                         </div>
 
@@ -661,39 +695,788 @@
                 </article>
 
 
-                <!-- QUICK -->
-                <article class="panel quick-panel">
+                <article
+                    class="panel quick-panel"
+                    id="quick-actions"
+                >
 
                     <div class="panel-header">
+
                         <div>
                             <small>ACÇÕES</small>
-                            <h3>Acesso rápido</h3>
+
+                            <h3>
+                                Acesso rápido
+                            </h3>
                         </div>
+
                     </div>
 
 
                     <div class="quick-grid">
 
-                        <button>
+                        <button
+                            type="button"
+                            onclick="goTo('/api/v1/students/')"
+                        >
+
                             <span>♙</span>
+
                             <div>
-                                <strong>Novo estudante</strong>
-                                <small>Registar estudante</small>
+                                <strong>
+                                    Novo estudante
+                                </strong>
+
+                                <small>
+                                    Registar estudante
+                                </small>
                             </div>
+
                             <b>→</b>
+
                         </button>
 
-                        <button>
+
+                        <button
+                            type="button"
+                            onclick="goTo('/api/v1/cards/')"
+                        >
+
                             <span>▣</span>
+
                             <div>
-                                <strong>Novo cartão</strong>
-                                <small>Registar RFID</small>
+                                <strong>
+                                    Novo cartão
+                                </strong>
+
+                                <small>
+                                    Registar RFID
+                                </small>
                             </div>
+
                             <b>→</b>
+
                         </button>
 
-                        <button>
+
+                        <button
+                            type="button"
+                            onclick="goTo('/monitoring/')"
+                        >
+
                             <span>⌁</span>
+
                             <div>
-                                <strong>Dispositivos</strong>
-                                <small>Monitorizar IoT</small>
+                                <strong>
+                                    Dispositivos
+                                </strong>
+
+                                <small>
+                                    Monitorizar IoT
+                                </small>
+                            </div>
+
+                            <b>→</b>
+
+                        </button>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+"use strict";
+
+const Dashboard = {
+    api: "/dashboard/api",
+    refreshInterval: 15000,
+    timer: null,
+
+    async load() {
+        try {
+            const response = await fetch(
+                this.api,
+                {
+                    method: "GET",
+                    credentials: "same-origin",
+                    headers: {
+                        "Accept": "application/json"
+                    },
+                    cache: "no-store"
+                }
+            );
+
+            if (response.status === 401) {
+                window.location.href = "/";
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    "Dashboard API: HTTP " +
+                    response.status
+                );
+            }
+
+            const payload = await response.json();
+
+            if (!payload.success) {
+                throw new Error(
+                    payload.message ||
+                    "Resposta inválida da API."
+                );
+            }
+
+            this.render(payload.data);
+
+            this.hideError();
+
+        } catch (error) {
+            console.error(
+                "SmartEdu Dashboard:",
+                error
+            );
+
+            this.showError();
+        }
+    },
+
+    render(data) {
+        if (!data) {
+            return;
+        }
+
+        this.renderStatistics(
+            data.statistics || {}
+        );
+
+        this.renderDevices(
+            data.devices || {}
+        );
+
+        this.renderAccesses(
+            data.recent_access || []
+        );
+
+        this.renderActivity(
+            data.activity || []
+        );
+
+        this.renderAttendance(
+            data.attendance || {}
+        );
+
+        this.updateDate();
+    },
+
+    renderStatistics(stats) {
+        setText(
+            "stat-students",
+            formatNumber(stats.students)
+        );
+
+        setText(
+            "stat-teachers",
+            formatNumber(stats.teachers)
+        );
+
+        setText(
+            "stat-cards",
+            formatNumber(stats.cards)
+        );
+
+        setText(
+            "stat-devices",
+            formatNumber(stats.devices)
+        );
+
+        setText(
+            "nav-students",
+            formatNumber(stats.students)
+        );
+
+        setText(
+            "nav-teachers",
+            formatNumber(stats.teachers)
+        );
+
+        setText(
+            "nav-cards",
+            formatNumber(stats.cards)
+        );
+
+        setText(
+            "nav-rooms",
+            formatNumber(stats.rooms)
+        );
+
+        setText(
+            "nav-access",
+            formatNumber(stats.access_logs)
+        );
+
+        setText(
+            "nav-attendance",
+            formatNumber(stats.attendance)
+        );
+
+        const cards = Number(
+            stats.cards || 0
+        );
+
+        const activeCards = Number(
+            stats.active_cards || 0
+        );
+
+        const activeRate = cards
+            ? ((activeCards / cards) * 100)
+            : 0;
+
+        setText(
+            "stat-card-rate",
+            activeRate.toFixed(1)
+        );
+
+        setText(
+            "service-denied",
+            formatNumber(stats.denied)
+        );
+    },
+
+    renderDevices(devices) {
+        const total = Number(
+            devices.total || 0
+        );
+
+        const online = Number(
+            devices.online || 0
+        );
+
+        setText(
+            "stat-online",
+            formatNumber(online)
+        );
+
+        let health = 100;
+
+        if (total > 0) {
+            health = Math.round(
+                (online / total) * 100
+            );
+        }
+
+        setText(
+            "health-score",
+            health
+        );
+
+        setText(
+            "stat-devices",
+            formatNumber(total)
+        );
+
+        setText(
+            "service-iot",
+            online === total
+                ? "ONLINE"
+                : "ATENÇÃO"
+        );
+
+        if (health >= 90) {
+            setText(
+                "health-title",
+                "Sistema saudável"
+            );
+
+            setText(
+                "health-description",
+                "Os dispositivos principais estão operacionais."
+            );
+        } else if (health >= 50) {
+            setText(
+                "health-title",
+                "Sistema parcialmente operacional"
+            );
+
+            setText(
+                "health-description",
+                "Existem dispositivos que precisam de atenção."
+            );
+        } else {
+            setText(
+                "health-title",
+                "Sistema requer atenção"
+            );
+
+            setText(
+                "health-description",
+                "Uma parte significativa da infraestrutura está offline."
+            );
+        }
+    },
+
+    renderAccesses(accesses) {
+        const container =
+            document.getElementById(
+                "access-list"
+            );
+
+        if (!container) {
+            return;
+        }
+
+        if (!accesses.length) {
+            container.innerHTML =
+                '<div class="empty-access">' +
+                'Nenhum acesso registado ainda.' +
+                '</div>';
+
+            return;
+        }
+
+        container.innerHTML =
+            accesses.map(
+                access => this.accessRow(access)
+            ).join("");
+    },
+
+    accessRow(access) {
+        const granted =
+            String(access.result || "")
+                .toLowerCase() === "granted";
+
+        const name =
+            access.holder_name ||
+            "Cartão desconhecido";
+
+        const uid =
+            access.card_uid ||
+            "UID não disponível";
+
+        const direction =
+            access.direction ||
+            "entry";
+
+        const time =
+            formatTime(access.timestamp);
+
+        const status =
+            granted
+                ? "Concedido"
+                : "Negado";
+
+        const initials =
+            getInitials(name);
+
+        const studentId =
+            access.student_id;
+
+        const teacherId =
+            access.teacher_id;
+
+        let type =
+            access.holder_type === "teacher"
+                ? "Professor"
+                : "Estudante";
+
+        if (!access.holder_name) {
+            type = "Não registado";
+        }
+
+        const reference =
+            studentId
+                ? "Estudante #" + studentId
+                : teacherId
+                    ? "Professor #" + teacherId
+                    : uid;
+
+        const rowClass =
+            granted
+                ? "access-row"
+                : "access-row denied-row";
+
+        const resultClass =
+            granted
+                ? "approved"
+                : "denied";
+
+        const resultIcon =
+            granted
+                ? "✓"
+                : "!";
+
+        return `
+            <div class="${rowClass}">
+
+                <div class="person-avatar ${granted
+                    ? "blue-avatar"
+                    : "red-avatar"}">
+                    ${escapeHtml(initials)}
+                </div>
+
+                <div class="person">
+
+                    <strong>
+                        ${escapeHtml(name)}
+                    </strong>
+
+                    <small>
+                        ${escapeHtml(reference)}
+                        ·
+                        ${escapeHtml(type)}
+                    </small>
+
+                </div>
+
+                <div class="room">
+
+                    <small>
+                        DISPOSITIVO
+                    </small>
+
+                    <strong>
+                        ${escapeHtml(
+                            access.device_code ||
+                            "N/D"
+                        )}
+                    </strong>
+
+                </div>
+
+                <div class="time">
+
+                    <strong>
+                        ${escapeHtml(time)}
+                    </strong>
+
+                    <small>
+                        ${escapeHtml(
+                            directionLabel(direction)
+                        )}
+                    </small>
+
+                </div>
+
+                <div class="${resultClass}"
+                     title="${escapeHtml(
+                         access.reason || status
+                     )}">
+                    ${resultIcon}
+                </div>
+
+            </div>
+        `;
+    },
+
+    renderActivity(activity) {
+        const container =
+            document.getElementById(
+                "activity-bars"
+            );
+
+        if (!container) {
+            return;
+        }
+
+        if (!activity.length) {
+            container.innerHTML =
+                '<div class="empty-access">' +
+                'Ainda não existem dados de actividade.' +
+                '</div>';
+
+            return;
+        }
+
+        const max = Math.max(
+            ...activity.map(
+                item => Number(item.total || 0)
+            ),
+            1
+        );
+
+        container.innerHTML =
+            activity.map(
+                item => {
+
+                    const total =
+                        Number(item.total || 0);
+
+                    const percentage =
+                        Math.max(
+                            3,
+                            Math.round(
+                                (total / max) * 100
+                            )
+                        );
+
+                    const date =
+                        parseDate(item.date);
+
+                    const label =
+                        date
+                            ? date.toLocaleDateString(
+                                "pt-PT",
+                                {
+                                    weekday: "short"
+                                }
+                            ).replace(".", "")
+                              .toUpperCase()
+                            : item.label;
+
+                    return `
+                        <div
+                            class="activity-bar"
+                            style="height:${percentage}%"
+                            title="${escapeHtml(
+                                item.label +
+                                " · " +
+                                total +
+                                " acessos"
+                            )}"
+                        >
+                            <b></b>
+                            <span>
+                                ${escapeHtml(label)}
+                            </span>
+                        </div>
+                    `;
+                }
+            ).join("");
+    },
+
+    renderAttendance(attendance) {
+        const total =
+            Number(attendance.total || 0);
+
+        setText(
+            "nav-attendance",
+            formatNumber(total)
+        );
+    },
+
+    updateDate() {
+        const element =
+            document.getElementById(
+                "current-date"
+            );
+
+        if (!element) {
+            return;
+        }
+
+        const date =
+            new Date();
+
+        element.textContent =
+            date.toLocaleDateString(
+                "pt-PT",
+                {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                }
+            ).toUpperCase();
+    },
+
+    start() {
+        this.load();
+
+        this.timer =
+            window.setInterval(
+                () => this.load(),
+                this.refreshInterval
+            );
+    },
+
+    showError() {
+        const box =
+            document.getElementById(
+                "dashboard-error"
+            );
+
+        if (box) {
+            box.style.display = "block";
+        }
+    },
+
+    hideError() {
+        const box =
+            document.getElementById(
+                "dashboard-error"
+            );
+
+        if (box) {
+            box.style.display = "none";
+        }
+    }
+};
+
+
+function setText(id, value) {
+    const element =
+        document.getElementById(id);
+
+    if (element) {
+        element.textContent =
+            value ?? "0";
+    }
+}
+
+
+function formatNumber(value) {
+    return Number(
+        value || 0
+    ).toLocaleString(
+        "pt-PT"
+    );
+}
+
+
+function formatTime(value) {
+    if (!value) {
+        return "--:--";
+    }
+
+    const date =
+        new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return "--:--";
+    }
+
+    return date.toLocaleTimeString(
+        "pt-PT",
+        {
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+}
+
+
+function parseDate(value) {
+    if (!value) {
+        return null;
+    }
+
+    const date =
+        new Date(value);
+
+    return Number.isNaN(
+        date.getTime()
+    )
+        ? null
+        : date;
+}
+
+
+function getInitials(name) {
+    if (!name) {
+        return "?";
+    }
+
+    const parts =
+        String(name)
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean);
+
+    if (!parts.length) {
+        return "?";
+    }
+
+    if (parts.length === 1) {
+        return parts[0]
+            .substring(0, 2)
+            .toUpperCase();
+    }
+
+    return (
+        parts[0][0] +
+        parts[parts.length - 1][0]
+    ).toUpperCase();
+}
+
+
+function directionLabel(direction) {
+    const value =
+        String(direction || "")
+            .toLowerCase();
+
+    if (value === "exit") {
+        return "Saída";
+    }
+
+    return "Entrada";
+}
+
+
+function escapeHtml(value) {
+    return String(
+        value ?? ""
+    )
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+function goTo(url) {
+    window.location.href = url;
+}
+
+
+function focusSearch() {
+    window.location.hash =
+        "search";
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+        Dashboard.start();
+
+        const period =
+            document.getElementById(
+                "activity-period"
+            );
+
+        if (period) {
+            period.addEventListener(
+                "change",
+                () => Dashboard.load()
+            );
+        }
+    }
+);
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            (event.ctrlKey || event.metaKey) &&
+            event.key.toLowerCase() === "k"
+        ) {
+            event.preventDefault();
+
+            focusSearch();
+        }
+    }
+);
+</script>
+
+</body>
+</html>

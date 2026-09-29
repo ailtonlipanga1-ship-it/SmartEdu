@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SmartEdu | Utilizadores</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Segoe UI,Arial;background:#f4f7fb;color:#172033}
+.header{height:72px;background:white;border-bottom:1px solid #e5eaf1;padding:0 32px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:12px;align-items:center;font-weight:800;font-size:21px}
+.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:white;display:grid;place-items:center}
+.container{max-width:1400px;margin:auto;padding:30px}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+h1{font-size:30px}.muted{color:#718096;margin-top:6px}
+.btn{border:0;border-radius:10px;padding:11px 17px;font-weight:700;cursor:pointer}
+.primary{background:#2563eb;color:white}.light{background:#eef2f7;color:#334155}.danger{background:#fee2e2;color:#991b1b}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:25px}
+.stat,.panel{background:white;border:1px solid #e5eaf1;border-radius:18px;box-shadow:0 12px 35px #0f172a10}
+.stat{padding:22px}.stat span{color:#718096;font-size:14px}.stat strong{display:block;font-size:30px;margin-top:8px}
+.toolbar{padding:20px;border-bottom:1px solid #e5eaf1;display:flex;gap:12px}
+.input,.select{height:44px;border:1px solid #dbe2ea;border-radius:10px;padding:0 12px;outline:0}.search{flex:1}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:800px}
+th,td{padding:16px;border-bottom:1px solid #e5eaf1;text-align:left}
+th{font-size:12px;background:#f8fafc;color:#64748b;text-transform:uppercase}
+.badge{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.active{background:#dcfce7;color:#166534}.inactive{background:#fee2e2;color:#991b1b}
+.actions{display:flex;gap:7px}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}.box{background:white;width:100%;max-width:650px;border-radius:18px}
+.modalhead{padding:20px;border-bottom:1px solid #eee;display:flex;justify-content:space-between}
+.close{border:0;background:#eee;padding:8px 12px;border-radius:8px}
+.form{padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.field{display:flex;flex-direction:column;gap:6px}.full{grid-column:1/-1}
+.field input,.field select{height:44px;border:1px solid #dbe2ea;border-radius:9px;padding:0 10px}
+.foot{padding:18px 22px;border-top:1px solid #eee;text-align:right}
+.toast{position:fixed;right:25px;bottom:25px;background:#172033;color:white;padding:15px 20px;border-radius:10px;display:none}.toast.show{display:block}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+<div class="brand"><div class="logo">S</div>SmartEdu</div>
+<button class="btn light" onclick="location.href='/dashboard/'">Dashboard</button>
+</header>
+
+<main class="container">
+
+<div class="head">
+<div>
+<h1>Gestão de Utilizadores</h1>
+<p class="muted">Administração das contas de acesso ao SmartEdu.</p>
+</div>
+<button class="btn primary" onclick="openCreate()">+ Novo utilizador</button>
+</div>
+
+<div class="stats">
+<div class="stat"><span>Total</span><strong id="total">0</strong></div>
+<div class="stat"><span>Ativos</span><strong id="active">0</strong></div>
+<div class="stat"><span>Inativos</span><strong id="inactive">0</strong></div>
+</div>
+
+<section class="panel">
+
+<div class="toolbar">
+<input id="search" class="input search" placeholder="Pesquisar utilizador..." oninput="render()">
+<button class="btn light" onclick="load()">↻ Atualizar</button>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Utilizador</th>
+<th>Email</th>
+<th>Perfil</th>
+<th>Estado</th>
+<th>Ações</th>
+</tr>
+</thead>
+<tbody id="body"></tbody>
+</table>
+</div>
+
+</section>
+</main>
+
+<div id="modal" class="modal">
+<div class="box">
+
+<div class="modalhead">
+<h2 id="title">Novo utilizador</h2>
+<button class="close" onclick="closeModal()">×</button>
+</div>
+
+<form id="form" class="form">
+<input type="hidden" id="id">
+
+<div class="field">
+<label>Utilizador *</label>
+<input id="username" required>
+</div>
+
+<div class="field">
+<label>Email *</label>
+<input id="email" type="email" required>
+</div>
+
+<div class="field">
+<label>Perfil *</label>
+<select id="role">
+<option value="admin">Administrador</option>
+<option value="manager">Gestor</option>
+<option value="operator">Operador</option>
+<option value="viewer">Visualizador</option>
+</select>
+</div>
+
+<div class="field">
+<label>Estado</label>
+<select id="active">
+<option value="true">Ativo</option>
+<option value="false">Inativo</option>
+</select>
+</div>
+
+<div class="field full">
+<label>Senha <span style="color:#718096">(necessária ao criar)</span></label>
+<input id="password" type="password" minlength="8">
+</div>
+</form>
+
+<div class="foot">
+<button class="btn light" onclick="closeModal()">Cancelar</button>
+<button class="btn primary" onclick="save()">Guardar</button>
+</div>
+
+</div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const API="/api/v1/users/";
+let users=[];
+
+function toast(m){
+const t=document.getElementById("toast");
+t.textContent=m;t.classList.add("show");
+setTimeout(()=>t.classList.remove("show"),3000);
+}
+
+function esc(v){
+return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+}
+
+function extract(x){
+if(Array.isArray(x))return x;
+if(Array.isArray(x?.data))return x.data;
+if(Array.isArray(x?.users))return x.users;
+if(Array.isArray(x?.results))return x.results;
+if(Array.isArray(x?.data?.users))return x.data.users;
+return [];
+}
+
+async function load(){
+try{
+const r=await fetch(API,{credentials:"same-origin"});
+const d=await r.json();
+if(!r.ok)throw Error(d.message||d.error||"Erro ao carregar utilizadores.");
+users=extract(d);
+stats();
+render();
+}catch(e){toast(e.message)}
+}
+
+function stats(){
+const total=users.length;
+const active=users.filter(x=>x.active===true||x.is_active===true).length;
+document.getElementById("total").textContent=total;
+document.getElementById("active").textContent=active;
+document.getElementById("inactive").textContent=total-active;
+}
+
+function render(){
+
+const q=document.getElementById("search").value.toLowerCase().trim();
+
+const list=users.filter(x=>
+!q||[
+x.username,
+x.email,
+x.role
+].join(" ").toLowerCase().includes(q)
+);
+
+const b=document.getElementById("body");
+
+if(!list.length){
+b.innerHTML='<tr><td colspan="5" style="text-align:center;padding:50px;color:#718096">Nenhum utilizador encontrado.</td></tr>';
+return;
+}
+
+b.innerHTML=list.map(x=>{
+
+const active=x.active===true||x.is_active===true;
+
+return `<tr>
+<td><strong>${esc(x.username)}</strong></td>
+<td>${esc(x.email)}</td>
+<td>${esc(x.role||"—")}</td>
+<td><span class="badge ${active?"active":"inactive"}">${active?"Ativo":"Inativo"}</span></td>
+<td>
+<button class="btn light" onclick="edit(${Number(x.id)})">Editar</button>
+<button class="btn danger" onclick="removeUser(${Number(x.id)})">Eliminar</button>
+</td>
+</tr>`;
+
+}).join("");
+}
+
+function openCreate(){
+document.getElementById("form").reset();
+document.getElementById("id").value="";
+document.getElementById("active").value="true";
+document.getElementById("title").textContent="Novo utilizador";
+document.getElementById("modal").classList.add("show");
+}
+
+function edit(id){
+const x=users.find(v=>Number(v.id)==Number(id));
+if(!x)return;
+
+document.getElementById("id").value=x.id;
+document.getElementById("username").value=x.username||"";
+document.getElementById("email").value=x.email||"";
+document.getElementById("role").value=x.role||"viewer";
+document.getElementById("active").value=(x.active===true||x.is_active===true)?"true":"false";
+document.getElementById("password").value="";
+document.getElementById("title").textContent="Editar utilizador";
+document.getElementById("modal").classList.add("show");
+}
+
+function closeModal(){
+document.getElementById("modal").classList.remove("show");
+}
+
+async function save(){
+
+const id=document.getElementById("id").value;
+
+const payload={
+username:document.getElementById("username").value.trim(),
+email:document.getElementById("email").value.trim(),
+role:document.getElementById("role").value,
+active:document.getElementById("active").value==="true"
+};
+
+const password=document.getElementById("password").value;
+
+if(password)payload.password=password;
+
+try{
+
+const r=await fetch(id?API+id:API,{
+method:id?"PUT":"POST",
+headers:{"Content-Type":"application/json"},
+credentials:"same-origin",
+body:JSON.stringify(payload)
+});
+
+const d=await r.json();
+
+if(!r.ok)throw Error(d.message||d.error||"Erro ao guardar utilizador.");
+
+closeModal();
+toast(id?"Utilizador atualizado.":"Utilizador criado.");
+await load();
+
+}catch(e){toast(e.message)}
+}
+
+async function removeUser(id){
+
+if(!confirm("Eliminar este utilizador?"))return;
+
+try{
+
+const r=await fetch(API+id,{
+method:"DELETE",
+credentials:"same-origin"
+});
+
+const d=await r.json();
+
+if(!r.ok)throw Error(d.message||d.error||"Erro ao eliminar.");
+
+toast("Utilizador eliminado.");
+await load();
+
+}catch(e){toast(e.message)}
+}
+
+load();
+</script>
+
+</body>
+</html>

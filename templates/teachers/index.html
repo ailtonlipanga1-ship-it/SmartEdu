@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SmartEdu | Professores</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#172033}
+.header{height:72px;background:#fff;border-bottom:1px solid #e5eaf1;display:flex;align-items:center;justify-content:space-between;padding:0 32px}
+.brand{display:flex;align-items:center;gap:12px;font-size:21px;font-weight:800}
+.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;display:grid;place-items:center}
+.container{max-width:1450px;margin:auto;padding:30px}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+h1{font-size:30px}.muted{color:#718096;margin-top:6px}
+.btn{border:0;border-radius:10px;padding:11px 17px;font-weight:700;cursor:pointer}
+.primary{background:#2563eb;color:white}.light{background:#eef2f7;color:#334155}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:25px}
+.stat,.panel{background:#fff;border:1px solid #e5eaf1;border-radius:18px;box-shadow:0 12px 35px rgba(15,23,42,.07)}
+.stat{padding:22px}.stat span{color:#718096;font-size:14px}.stat strong{display:block;font-size:30px;margin-top:8px}
+.toolbar{padding:20px;border-bottom:1px solid #e5eaf1;display:flex;gap:12px}
+.input,.select{height:44px;border:1px solid #dbe2ea;border-radius:10px;padding:0 13px;outline:0}
+.search{flex:1}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th,td{padding:16px 18px;text-align:left;border-bottom:1px solid #e5eaf1}
+th{font-size:12px;text-transform:uppercase;color:#64748b;background:#f8fafc}
+.badge{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.active{background:#dcfce7;color:#166534}.inactive{background:#fee2e2;color:#991b1b}
+.actions{display:flex;gap:7px}.icon{border:0;border-radius:8px;padding:8px;cursor:pointer}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}.box{background:#fff;border-radius:18px;width:100%;max-width:700px}
+.modalhead{padding:20px;border-bottom:1px solid #eee;display:flex;justify-content:space-between}
+.form{padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.field{display:flex;flex-direction:column;gap:6px}.full{grid-column:1/-1}
+.field input,.field select{height:43px;border:1px solid #dbe2ea;border-radius:9px;padding:0 10px}
+.foot{padding:18px 22px;border-top:1px solid #eee;text-align:right}
+.close{border:0;background:#eee;border-radius:8px;padding:8px 12px;cursor:pointer}
+.toast{position:fixed;right:25px;bottom:25px;background:#172033;color:white;padding:15px 20px;border-radius:10px;display:none}
+.toast.show{display:block}
+@media(max-width:800px){.stats{grid-template-columns:1fr}.form{grid-template-columns:1fr}.full{grid-column:auto}.head{align-items:flex-start;gap:15px;flex-direction:column}}
+</style>
+</head>
+<body>
+
+<header class="header">
+<div class="brand"><div class="logo">S</div>SmartEdu</div>
+<button class="btn light" onclick="location.href='/dashboard/'">Dashboard</button>
+</header>
+
+<main class="container">
+<div class="head">
+<div>
+<h1>Gestão de Professores</h1>
+<p class="muted">Gestão de docentes, departamentos e estado de acesso.</p>
+</div>
+<button class="btn primary" onclick="openCreate()">+ Novo professor</button>
+</div>
+
+<div class="stats">
+<div class="stat"><span>Total de professores</span><strong id="total">0</strong></div>
+<div class="stat"><span>Professores ativos</span><strong id="active">0</strong></div>
+<div class="stat"><span>Inativos</span><strong id="inactive">0</strong></div>
+</div>
+
+<section class="panel">
+<div class="toolbar">
+<input id="search" class="input search" placeholder="Pesquisar professor..." oninput="render()">
+<select id="filter" class="select" onchange="render()">
+<option value="">Todos</option>
+<option value="active">Ativos</option>
+<option value="inactive">Inativos</option>
+</select>
+<button class="btn light" onclick="load()">↻ Atualizar</button>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead><tr>
+<th>Nº funcionário</th>
+<th>Nome</th>
+<th>Email</th>
+<th>Departamento</th>
+<th>Estado</th>
+<th>Ações</th>
+</tr></thead>
+<tbody id="body"></tbody>
+</table>
+</div>
+</section>
+</main>
+
+<div id="modal" class="modal">
+<div class="box">
+<div class="modalhead">
+<h2 id="title">Novo professor</h2>
+<button class="close" onclick="closeModal()">×</button>
+</div>
+
+<form id="form" class="form">
+<input type="hidden" id="id">
+
+<div class="field">
+<label>Nº funcionário *</label>
+<input id="employee_number" required>
+</div>
+
+<div class="field">
+<label>Nome *</label>
+<input id="name" required>
+</div>
+
+<div class="field">
+<label>Email *</label>
+<input id="email" type="email" required>
+</div>
+
+<div class="field">
+<label>Departamento *</label>
+<input id="department" required>
+</div>
+
+<div class="field full">
+<label>Estado</label>
+<select id="status">
+<option value="active">Ativo</option>
+<option value="inactive">Inativo</option>
+</select>
+</div>
+</form>
+
+<div class="foot">
+<button class="btn light" onclick="closeModal()">Cancelar</button>
+<button class="btn primary" onclick="save()">Guardar</button>
+</div>
+</div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const API="/api/v1/teachers/";
+let items=[];
+
+function toast(msg){
+const t=document.getElementById("toast");
+t.textContent=msg;t.classList.add("show");
+setTimeout(()=>t.classList.remove("show"),3000);
+}
+
+function esc(v){
+return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+}
+
+function extract(x){
+if(Array.isArray(x))return x;
+if(Array.isArray(x?.data))return x.data;
+if(Array.isArray(x?.teachers))return x.teachers;
+if(Array.isArray(x?.results))return x.results;
+if(Array.isArray(x?.data?.teachers))return x.data.teachers;
+return [];
+}
+
+async function load(){
+try{
+const r=await fetch(API,{credentials:"same-origin"});
+const d=await r.json();
+if(!r.ok)throw Error(d.message||d.error||"Erro ao carregar professores.");
+items=extract(d);
+updateStats();
+render();
+}catch(e){console.error(e);toast(e.message)}
+}
+
+function updateStats(){
+const total=items.length;
+const active=items.filter(x=>String(x.status||"").toLowerCase()=="active").length;
+document.getElementById("total").textContent=total;
+document.getElementById("active").textContent=active;
+document.getElementById("inactive").textContent=total-active;
+}
+
+function render(){
+const q=document.getElementById("search").value.toLowerCase().trim();
+const f=document.getElementById("filter").value;
+const list=items.filter(x=>{
+const text=[x.employee_number,x.name,x.email,x.department].join(" ").toLowerCase();
+return(!q||text.includes(q))&&(!f||String(x.status||"").toLowerCase()==f);
+});
+
+const b=document.getElementById("body");
+if(!list.length){
+b.innerHTML='<tr><td colspan="6" style="text-align:center;padding:50px;color:#718096">Nenhum professor encontrado.</td></tr>';
+return;
+}
+
+b.innerHTML=list.map(x=>{
+const active=String(x.status||"").toLowerCase()=="active";
+return `<tr>
+<td><strong>${esc(x.employee_number)}</strong></td>
+<td><strong>${esc(x.name)}</strong></td>
+<td>${esc(x.email)}</td>
+<td>${esc(x.department)}</td>
+<td><span class="badge ${active?"active":"inactive"}">${active?"Ativo":"Inativo"}</span></td>
+<td><div class="actions">
+<button class="icon light" onclick="edit(${Number(x.id)})">✎</button>
+<button class="icon" style="background:#fee2e2;color:#991b1b" onclick="removeItem(${Number(x.id)})">🗑</button>
+</div></td>
+</tr>`;
+}).join("");
+}
+
+function openCreate(){
+document.getElementById("form").reset();
+document.getElementById("id").value="";
+document.getElementById("status").value="active";
+document.getElementById("title").textContent="Novo professor";
+document.getElementById("modal").classList.add("show");
+}
+
+function edit(id){
+const x=items.find(v=>Number(v.id)==Number(id));
+if(!x)return;
+document.getElementById("id").value=x.id;
+document.getElementById("employee_number").value=x.employee_number||"";
+document.getElementById("name").value=x.name||"";
+document.getElementById("email").value=x.email||"";
+document.getElementById("department").value=x.department||"";
+document.getElementById("status").value=x.status||"active";
+document.getElementById("title").textContent="Editar professor";
+document.getElementById("modal").classList.add("show");
+}
+
+function closeModal(){
+document.getElementById("modal").classList.remove("show");
+}
+
+async function save(){
+const f=document.getElementById("form");
+if(!f.reportValidity())return;
+
+const id=document.getElementById("id").value;
+
+const payload={
+employee_number:document.getElementById("employee_number").value.trim(),
+name:document.getElementById("name").value.trim(),
+email:document.getElementById("email").value.trim(),
+department:document.getElementById("department").value.trim(),
+status:document.getElementById("status").value
+};
+
+try{
+const r=await fetch(id?API+id:API,{
+method:id?"PUT":"POST",
+headers:{"Content-Type":"application/json"},
+credentials:"same-origin",
+body:JSON.stringify(payload)
+});
+const d=await r.json();
+if(!r.ok)throw Error(d.message||d.error||"Erro ao guardar.");
+closeModal();
+toast(id?"Professor atualizado.":"Professor criado.");
+await load();
+}catch(e){toast(e.message)}
+}
+
+async function removeItem(id){
+const x=items.find(v=>Number(v.id)==Number(id));
+if(!x)return;
+if(!confirm(`Eliminar o professor "${x.name}"?`))return;
+
+try{
+const r=await fetch(API+id,{method:"DELETE",credentials:"same-origin"});
+const d=await r.json();
+if(!r.ok)throw Error(d.message||d.error||"Erro ao eliminar.");
+toast("Professor eliminado.");
+await load();
+}catch(e){toast(e.message)}
+}
+
+load();
+</script>
+</body>
+</html>

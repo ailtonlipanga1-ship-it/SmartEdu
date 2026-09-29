@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SmartEdu | Dispositivos</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Segoe UI,Arial;background:#f4f7fb;color:#172033}
+.header{height:72px;background:#fff;border-bottom:1px solid #e5eaf1;display:flex;align-items:center;justify-content:space-between;padding:0 32px}
+.brand{display:flex;align-items:center;gap:12px;font-size:21px;font-weight:800}
+.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;display:grid;place-items:center}
+.container{max-width:1400px;margin:auto;padding:30px}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+h1{font-size:30px}.muted{color:#718096;margin-top:6px}
+.btn{border:0;border-radius:10px;padding:11px 17px;font-weight:700;cursor:pointer}
+.primary{background:#2563eb;color:#fff}.light{background:#eef2f7;color:#334155}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:25px}
+.stat,.panel{background:#fff;border:1px solid #e5eaf1;border-radius:18px;box-shadow:0 12px 35px #0f172a10}
+.stat{padding:22px}.stat span{color:#718096;font-size:14px}.stat strong{display:block;font-size:29px;margin-top:8px}
+.toolbar{padding:20px;border-bottom:1px solid #e5eaf1;display:flex;gap:12px}
+.input{height:44px;border:1px solid #dbe2ea;border-radius:10px;padding:0 12px;outline:0}.search{flex:1}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:800px}
+th,td{padding:16px;border-bottom:1px solid #e5eaf1;text-align:left}
+th{font-size:12px;background:#f8fafc;color:#64748b;text-transform:uppercase}
+.badge{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.online{background:#dcfce7;color:#166534}.offline{background:#fee2e2;color:#991b1b}.maintenance{background:#fef3c7;color:#92400e}
+</style>
+</head>
+<body>
+
+<header class="header">
+<div class="brand"><div class="logo">S</div>SmartEdu</div>
+<button class="btn light" onclick="location.href='/dashboard/'">Dashboard</button>
+</header>
+
+<main class="container">
+
+<div class="head">
+<div>
+<h1>Gestão de Dispositivos</h1>
+<p class="muted">Monitorização dos gateways, leitores RFID e equipamentos SmartEdu.</p>
+</div>
+<button class="btn primary" onclick="load()">↻ Atualizar</button>
+</div>
+
+<div class="stats">
+<div class="stat"><span>Total</span><strong id="total">0</strong></div>
+<div class="stat"><span>Online</span><strong id="online">0</strong></div>
+<div class="stat"><span>Offline</span><strong id="offline">0</strong></div>
+<div class="stat"><span>Manutenção</span><strong id="maintenance">0</strong></div>
+</div>
+
+<section class="panel">
+
+<div class="toolbar">
+<input id="search" class="input search" placeholder="Pesquisar dispositivo..." oninput="render()">
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>Nome</th>
+<th>Tipo</th>
+<th>Localização</th>
+<th>Estado</th>
+<th>Última atividade</th>
+</tr>
+</thead>
+<tbody id="body"></tbody>
+</table>
+</div>
+
+</section>
+</main>
+
+<script>
+
+const API="/api/v1/devices/";
+let devices=[];
+
+function extract(x){
+if(Array.isArray(x))return x;
+if(Array.isArray(x?.data))return x.data;
+if(Array.isArray(x?.devices))return x.devices;
+if(Array.isArray(x?.results))return x.results;
+if(Array.isArray(x?.data?.devices))return x.data.devices;
+return [];
+}
+
+function load(){
+fetch(API,{credentials:"same-origin"})
+.then(r=>r.json().then(d=>({r,d})))
+.then(({r,d})=>{
+if(!r.ok)throw Error(d.message||d.error||"Erro ao carregar dispositivos.");
+devices=extract(d);
+stats();
+render();
+})
+.catch(e=>{
+document.getElementById("body").innerHTML=
+`<tr><td colspan="6" style="text-align:center;padding:50px;color:#718096">${esc(e.message)}</td></tr>`;
+});
+}
+
+function stats(){
+document.getElementById("total").textContent=devices.length;
+document.getElementById("online").textContent=devices.filter(x=>x.status==="online").length;
+document.getElementById("offline").textContent=devices.filter(x=>x.status==="offline").length;
+document.getElementById("maintenance").textContent=devices.filter(x=>x.status==="maintenance").length;
+}
+
+function render(){
+
+const q=document.getElementById("search").value.toLowerCase().trim();
+
+const list=devices.filter(x=>
+!q||[
+x.code,
+x.device_code,
+x.name,
+x.type,
+x.location
+].join(" ").toLowerCase().includes(q)
+);
+
+const b=document.getElementById("body");
+
+if(!list.length){
+b.innerHTML='<tr><td colspan="6" style="text-align:center;padding:50px;color:#718096">Nenhum dispositivo encontrado.</td></tr>';
+return;
+}
+
+b.innerHTML=list.map(x=>{
+
+const status=String(x.status||"offline").toLowerCase();
+
+return `<tr>
+<td><strong>${esc(x.code||x.device_code||"—")}</strong></td>
+<td>${esc(x.name||"—")}</td>
+<td>${esc(x.type||x.device_type||"RFID")}</td>
+<td>${esc(x.location||"—")}</td>
+<td><span class="badge ${status}">${status}</span></td>
+<td>${x.last_seen?new Date(x.last_seen).toLocaleString("pt-PT"):"—"}</td>
+</tr>`;
+
+}).join("");
+}
+
+function esc(v){
+return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+}
+
+load();
+setInterval(load,30000);
+
+</script>
+</body>
+</html>

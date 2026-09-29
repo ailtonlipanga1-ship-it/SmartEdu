@@ -1,0 +1,4 @@
+"""
+SmartEdu Access
+Route package.
+"""

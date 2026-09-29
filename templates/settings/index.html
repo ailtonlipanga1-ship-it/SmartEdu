@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SmartEdu | Configurações</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Segoe UI,Arial;background:#f4f7fb;color:#172033}
+.header{height:72px;background:#fff;border-bottom:1px solid #e5eaf1;display:flex;align-items:center;justify-content:space-between;padding:0 32px}
+.brand{display:flex;gap:12px;align-items:center;font-size:21px;font-weight:800}
+.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:white;display:grid;place-items:center}
+.container{max-width:1100px;margin:auto;padding:30px}
+h1{font-size:30px}.muted{color:#718096;margin-top:6px}
+.head{margin-bottom:25px}
+.panel{background:white;border:1px solid #e5eaf1;border-radius:18px;box-shadow:0 12px 35px #0f172a10;margin-bottom:20px;overflow:hidden}
+.panel h2{padding:20px;border-bottom:1px solid #e5eaf1;font-size:18px}
+.content{padding:22px}
+.field{display:flex;flex-direction:column;gap:7px;margin-bottom:17px}
+label{font-size:13px;font-weight:700;color:#475569}
+input,select{height:44px;border:1px solid #dbe2ea;border-radius:10px;padding:0 12px;outline:0}
+input:focus,select:focus{border-color:#2563eb}
+.switch{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid #edf0f4}
+.switch:last-child{border:0}
+.btn{border:0;border-radius:10px;padding:11px 17px;font-weight:700;cursor:pointer}
+.primary{background:#2563eb;color:#fff}.light{background:#eef2f7;color:#334155}
+.actions{text-align:right;padding:20px;border-top:1px solid #e5eaf1}
+.status{padding:14px;border-radius:10px;background:#f0fdf4;color:#166534;display:none;margin-bottom:20px}
+.status.show{display:block}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+<div class="brand"><div class="logo">S</div>SmartEdu</div>
+<button class="btn light" onclick="location.href='/dashboard/'">Dashboard</button>
+</header>
+
+<main class="container">
+
+<div class="head">
+<h1>Configurações</h1>
+<p class="muted">Configurações gerais da plataforma SmartEdu.</p>
+</div>
+
+<div id="statusMessage" class="status">
+Configurações atualizadas localmente.
+</div>
+
+<section class="panel">
+<h2>Instituição</h2>
+
+<div class="content">
+
+<div class="field">
+<label>Nome da instituição</label>
+<input id="institutionName" value="SmartEdu Campus">
+</div>
+
+<div class="field">
+<label>Código da instituição</label>
+<input id="institutionCode" value="SMEDU">
+</div>
+
+<div class="field">
+<label>Fuso horário</label>
+<select id="timezone">
+<option value="Africa/Maputo">Africa/Maputo</option>
+<option value="UTC">UTC</option>
+</select>
+</div>
+
+</div>
+</section>
+
+<section class="panel">
+<h2>Segurança</h2>
+
+<div class="content">
+
+<div class="switch">
+<div>
+<strong>Proteção da sessão</strong>
+<p class="muted">Manter autenticação protegida.</p>
+</div>
+<input id="secureSession" type="checkbox" checked>
+</div>
+
+<div class="switch">
+<div>
+<strong>Registo de acessos</strong>
+<p class="muted">Guardar todos os eventos RFID.</p>
+</div>
+<input id="accessLogging" type="checkbox" checked>
+</div>
+
+<div class="switch">
+<div>
+<strong>Bloqueio de cartões inválidos</strong>
+<p class="muted">Recusar cartões bloqueados ou inativos.</p>
+</div>
+<input id="cardProtection" type="checkbox" checked>
+</div>
+
+</div>
+</section>
+
+<section class="panel">
+<h2>Interface</h2>
+
+<div class="content">
+
+<div class="field">
+<label>Atualização automática</label>
+<select id="refresh">
+<option value="15">15 segundos</option>
+<option value="30" selected>30 segundos</option>
+<option value="60">60 segundos</option>
+<option value="0">Desativada</option>
+</select>
+</div>
+
+</div>
+
+<div class="actions">
+<button class="btn light" onclick="resetSettings()">Restaurar</button>
+<button class="btn primary" onclick="saveSettings()">Guardar configurações</button>
+</div>
+
+</section>
+
+</main>
+
+<script>
+
+const KEY="smartedu.settings";
+
+function saveSettings(){
+
+const settings={
+institutionName:document.getElementById("institutionName").value,
+institutionCode:document.getElementById("institutionCode").value,
+timezone:document.getElementById("timezone").value,
+secureSession:document.getElementById("secureSession").checked,
+accessLogging:document.getElementById("accessLogging").checked,
+cardProtection:document.getElementById("cardProtection").checked,
+refresh:document.getElementById("refresh").value
+};
+
+localStorage.setItem(KEY,JSON.stringify(settings));
+
+const box=document.getElementById("statusMessage");
+box.textContent="Configurações guardadas.";
+box.classList.add("show");
+
+setTimeout(()=>box.classList.remove("show"),3000);
+}
+
+function loadSettings(){
+
+try{
+
+const s=JSON.parse(localStorage.getItem(KEY)||"{}");
+
+if(s.institutionName)document.getElementById("institutionName").value=s.institutionName;
+if(s.institutionCode)document.getElementById("institutionCode").value=s.institutionCode;
+if(s.timezone)document.getElementById("timezone").value=s.timezone;
+
+if(typeof s.secureSession==="boolean")
+document.getElementById("secureSession").checked=s.secureSession;
+
+if(typeof s.accessLogging==="boolean")
+document.getElementById("accessLogging").checked=s.accessLogging;
+
+if(typeof s.cardProtection==="boolean")
+document.getElementById("cardProtection").checked=s.cardProtection;
+
+if(s.refresh)document.getElementById("refresh").value=s.refresh;
+
+}catch(e){
+console.error(e);
+}
+
+}
+
+function resetSettings(){
+
+if(!confirm("Restaurar as configurações padrão?"))return;
+
+localStorage.removeItem(KEY);
+location.reload();
+
+}
+
+loadSettings();
+
+</script>
+</body>
+</html>

@@ -1,684 +1,713 @@
-<!doctype html>
+﻿]<!DOCTYPE html>
 <html lang="pt-MZ">
-<head>
 
+<head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1"
-    >
-
-    <meta
-        name="theme-color"
-        content="#080d18"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <meta
         name="description"
-        content="SmartEdu Access — plataforma institucional de gestão académica e controlo inteligente de acesso."
+        content="SmartEdu Access â€” Sistema de GestÃ£o Escolar e Controlo de Acesso"
     >
 
-    <title>SmartEdu Access — Autenticação</title>
+    <title>SmartEdu Access | Entrar</title>
 
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='css/auth.css') }}"
     >
-
 </head>
 
-<body>
-
-<div class="login-shell">
+<body class="auth-page">
 
     <!-- =========================================================
-         BACKGROUND SYSTEM
+         INTRO
          ========================================================= -->
 
-    <div class="background-grid"></div>
+    <div class="page-intro" id="pageIntro">
 
-    <div class="background-glow glow-one"></div>
-    <div class="background-glow glow-two"></div>
+        <div class="intro-logo">S</div>
+
+        <div class="intro-name">
+            SMARTEDU
+        </div>
+
+        <div class="intro-line"></div>
+
+    </div>
 
 
     <!-- =========================================================
-         LEFT SYSTEM PANEL
+         LOGIN EXPERIENCE
          ========================================================= -->
 
-    <aside class="system-panel">
+    <main>
 
-        <header class="system-header">
+        <section class="auth-shell" id="authShell">
 
-            <a href="/" class="brand">
+            <!-- =================================================
+                 HERO / BANNER
+                 ================================================= -->
 
-                <span class="brand-mark">
-                    <span>S</span>
-                </span>
+            <section class="hero-panel">
 
-                <span class="brand-name">
-                    <strong>SmartEdu</strong>
-                    <small>ACCESS PLATFORM</small>
-                </span>
+                <div class="hero-photo"></div>
 
-            </a>
+                <div class="hero-overlay"></div>
 
-            <span class="environment-badge">
-                <i></i>
-                SYSTEM ONLINE
-            </span>
+                <div class="hero-glow hero-glow-one"></div>
+                <div class="hero-glow hero-glow-two"></div>
 
-        </header>
+                <div class="light-sweep"></div>
 
+                <div class="data-particle particle-one"></div>
+                <div class="data-particle particle-two"></div>
+                <div class="data-particle particle-three"></div>
+                <div class="data-particle particle-four"></div>
 
-        <div class="system-main">
+                <div class="hero-content">
 
-            <div class="system-intro">
+                    <div class="brand-top">
 
-                <span class="system-kicker">
-                    INSTITUTIONAL CONTROL PLATFORM
-                </span>
-
-                <h1>
-                    Uma única plataforma.
-                    <br>
-                    <span>Todo o controlo.</span>
-                </h1>
-
-                <p>
-                    Gestão de identidade, presença, RFID,
-                    dispositivos IoT e controlo de acesso
-                    num único ambiente institucional.
-                </p>
-
-            </div>
-
-
-            <!-- NETWORK VISUAL -->
-
-            <div class="network-visual">
-
-                <div class="network-top">
-
-                    <span>SMARTEDU CORE</span>
-
-                    <span class="network-live">
-                        ● LIVE
-                    </span>
-
-                </div>
-
-
-                <div class="network-map">
-
-                    <div class="network-line line-a"></div>
-                    <div class="network-line line-b"></div>
-                    <div class="network-line line-c"></div>
-
-                    <div class="network-node node-core">
-
-                        <div class="node-icon">
+                        <div class="brand-symbol">
                             S
                         </div>
 
-                        <strong>CORE</strong>
-
-                    </div>
-
-
-                    <div class="network-node node-rfid">
-
-                        <div class="node-icon">
-                            RFID
-                        </div>
-
-                        <span>ACCESS</span>
-
-                    </div>
-
-
-                    <div class="network-node node-iot">
-
-                        <div class="node-icon">
-                            IoT
-                        </div>
-
-                        <span>DEVICES</span>
-
-                    </div>
-
-
-                    <div class="network-node node-data">
-
-                        <div class="node-icon">
-                            DB
-                        </div>
-
-                        <span>DATA</span>
-
-                    </div>
-
-
-                    <div class="network-pulse pulse-one"></div>
-                    <div class="network-pulse pulse-two"></div>
-
-                </div>
-
-            </div>
-
-
-            <!-- SYSTEM METRICS -->
-
-            <div class="system-metrics">
-
-                <div class="metric">
-
-                    <div class="metric-icon">
-                        ◈
-                    </div>
-
-                    <div>
-                        <strong>RFID</strong>
-                        <span>Access Control</span>
-                    </div>
-
-                    <b class="metric-online">
-                        Online
-                    </b>
-
-                </div>
-
-
-                <div class="metric">
-
-                    <div class="metric-icon">
-                        ◉
-                    </div>
-
-                    <div>
-                        <strong>IoT</strong>
-                        <span>Device Network</span>
-                    </div>
-
-                    <b class="metric-online">
-                        Online
-                    </b>
-
-                </div>
-
-
-                <div class="metric">
-
-                    <div class="metric-icon">
-                        ◫
-                    </div>
-
-                    <div>
-                        <strong>API</strong>
-                        <span>Core Services</span>
-                    </div>
-
-                    <b class="metric-online">
-                        Online
-                    </b>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <footer class="system-footer">
-
-            <span>
-                SmartEdu Access
-            </span>
-
-            <span>
-                v{{ app_version or "1.0.0" }}
-            </span>
-
-            <span>
-                © {{ current_year or 2026 }}
-            </span>
-
-        </footer>
-
-    </aside>
-
-
-    <!-- =========================================================
-         AUTHENTICATION AREA
-         ========================================================= -->
-
-    <main class="authentication">
-
-        <div class="auth-topbar">
-
-            <span class="secure-session">
-
-                <span class="secure-icon">
-                    ✓
-                </span>
-
-                Secure Session
-
-            </span>
-
-            <button
-                type="button"
-                class="help-button"
-                title="Ajuda"
-            >
-                ?
-            </button>
-
-        </div>
-
-
-        <section class="auth-content">
-
-            <div class="auth-card">
-
-
-                <!-- CARD HEADER -->
-
-                <div class="auth-card-header">
-
-                    <div class="auth-card-icon">
-
-                        <div class="auth-lock">
-                            ◇
-                        </div>
-
-                    </div>
-
-                    <div>
-
-                        <span class="auth-overline">
-                            AUTENTICAÇÃO
+                        <span>
+                            SMARTEDU ACCESS
                         </span>
 
-                        <h2>
-                            Aceder ao sistema
-                        </h2>
+                    </div>
+
+
+                    <div class="hero-main">
+
+                        <span class="hero-label">
+                            PLATAFORMA INSTITUCIONAL
+                        </span>
+
+                        <h1>
+                            A escola
+                            <strong>do futuro.</strong>
+                        </h1>
 
                         <p>
-                            Introduza as suas credenciais
-                            institucionais.
+                            GestÃ£o escolar inteligente, controlo
+                            de acesso RFID e seguranÃ§a institucional
+                            numa Ãºnica plataforma.
                         </p>
 
                     </div>
 
-                </div>
 
+                    <div class="hero-bottom">
 
-                <!-- FLASH MESSAGES -->
+                        <div class="system-status">
 
-                {% with messages =
-                    get_flashed_messages(
-                        with_categories=true
-                    )
-                %}
-
-                    {% if messages %}
-
-                        <div class="auth-messages">
-
-                            {% for category, message in messages %}
-
-                                <div
-                                    class="auth-message
-                                    {{ category }}"
-                                >
-
-                                    <span>
-                                        {% if category == "success" %}
-                                            ✓
-                                        {% elif category == "warning" %}
-                                            !
-                                        {% else %}
-                                            ×
-                                        {% endif %}
-                                    </span>
-
-                                    {{ message }}
-
-                                </div>
-
-                            {% endfor %}
-
-                        </div>
-
-                    {% endif %}
-
-                {% endwith %}
-
-
-                <!-- FORM -->
-
-                <form
-                    method="POST"
-                    action="/login"
-                    class="authentication-form"
-                    autocomplete="on"
-                >
-
-                    <!-- USERNAME -->
-
-                    <div class="form-field">
-
-                        <div class="field-label">
-
-                            <label for="email">
-                                Identificação
-                            </label>
+                            <span class="status-light"></span>
 
                             <span>
-                                REQUIRED
+                                Sistema operacional
                             </span>
 
                         </div>
 
+                        <span class="hero-version">
+                            SMARTEDU ACCESS
+                        </span>
 
-                        <div class="advanced-input">
+                    </div>
 
-                            <div class="input-symbol">
-                                ID
-                            </div>
+                </div>
 
-                            <input
-                                id="email"
-                                name="email"
-                                type="text"
-                                placeholder="Email ou nome de utilizador"
-                                autocomplete="username"
-                                required
-                            >
+            </section>
 
-                            <div class="input-state">
-                                ●
-                            </div>
 
-                        </div>
+            <!-- =================================================
+                 LOGIN
+                 ================================================= -->
+
+            <section class="login-panel">
+
+                <div class="login-inner">
+
+                    <div class="login-heading">
+
+                        <span class="login-kicker">
+                            SMARTEDU ACCESS
+                        </span>
+
+                        <h2>
+                            Bem-vindo.
+                        </h2>
+
+                        <p>
+                            Entre na sua conta para continuar
+                            para o painel administrativo.
+                        </p>
 
                     </div>
 
 
-                    <!-- PASSWORD -->
+                    <!-- Mensagem -->
 
-                    <div class="form-field">
+                    <div
+                        id="loginMessage"
+                        class="login-message"
+                        role="alert"
+                        aria-live="polite"
+                    ></div>
 
-                        <div class="field-label">
+
+                    <!-- =================================================
+                         FORMULÃRIO
+                         ================================================= -->
+
+                    <form
+                        id="loginForm"
+                        class="login-form"
+                        autocomplete="on"
+                        novalidate
+                    >
+
+                        <div class="field">
+
+                            <label for="email">
+                                Email
+                            </label>
+
+                            <div class="input-box">
+
+                                <span
+                                    class="input-symbol"
+                                    aria-hidden="true"
+                                >
+                                    @
+                                </span>
+
+                                <input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    placeholder="admin@smartedu.local"
+                                    autocomplete="username"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="field">
 
                             <label for="password">
                                 Palavra-passe
                             </label>
 
-                            <a href="/forgot-password">
-                                Recuperar acesso
-                            </a>
+                            <div class="input-box">
 
-                        </div>
+                                <span
+                                    class="input-symbol lock-symbol"
+                                    aria-hidden="true"
+                                >
+                                    â—
+                                </span>
 
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    placeholder="Introduza a sua palavra-passe"
+                                    autocomplete="current-password"
+                                    required
+                                >
 
-                        <div class="advanced-input">
+                                <button
+                                    type="button"
+                                    id="passwordToggle"
+                                    class="password-toggle"
+                                    aria-label="Mostrar palavra-passe"
+                                >
+                                    Mostrar
+                                </button>
 
-                            <div class="input-symbol">
-                                KEY
                             </div>
 
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                placeholder="Introduza a sua palavra-passe"
-                                autocomplete="current-password"
-                                required
-                            >
-
-                            <button
-                                type="button"
-                                class="password-toggle"
-                                id="passwordToggle"
-                            >
-                                <span id="passwordToggleText">
-                                    SHOW
-                                </span>
-                            </button>
-
                         </div>
 
-                    </div>
 
+                        <button
+                            type="submit"
+                            id="loginButton"
+                            class="login-button"
+                        >
 
-                    <!-- OPTIONS -->
+                            <span class="button-label">
+                                Entrar no sistema
+                            </span>
 
-                    <div class="form-options">
-
-                        <label class="remember-option">
-
-                            <input
-                                type="checkbox"
-                                name="remember"
+                            <span
+                                class="button-arrow"
+                                aria-hidden="true"
                             >
-
-                            <span class="custom-checkbox">
-                                ✓
+                                â†’
                             </span>
 
-                            <span>
-                                Manter sessão iniciada
-                            </span>
+                            <span
+                                class="button-loader"
+                                aria-hidden="true"
+                            ></span>
 
-                        </label>
+                        </button>
 
-                        <span class="session-time">
-                            Sessão: 8h
-                        </span>
-
-                    </div>
+                    </form>
 
 
-                    <!-- SUBMIT -->
+                    <!-- =================================================
+                         SEGURANÃ‡A
+                         ================================================= -->
 
-                    <button
-                        type="submit"
-                        class="access-button"
-                        id="loginButton"
-                    >
+                    <div class="security-box">
 
-                        <span class="button-content">
+                        <div class="security-check">
+                            âœ“
+                        </div>
 
-                            <span class="button-icon">
-                                →
-                            </span>
-
-                            <span>
-                                AUTENTICAR
-                            </span>
-
-                        </span>
-
-                        <span class="button-status">
-                            ENTER ↵
-                        </span>
-
-                    </button>
-
-                </form>
-
-
-                <!-- SECURITY PANEL -->
-
-                <div class="security-panel">
-
-                    <div class="security-header">
-
-                        <span class="security-shield">
-                            ✓
-                        </span>
-
-                        <div>
+                        <div class="security-text">
 
                             <strong>
-                                Ambiente protegido
+                                SessÃ£o protegida
                             </strong>
 
                             <span>
-                                SmartEdu Security Layer
+                                ComunicaÃ§Ã£o segura com o SmartEdu.
                             </span>
 
                         </div>
 
-                        <span class="security-level">
-                            SECURE
-                        </span>
-
                     </div>
 
 
-                    <div class="security-items">
+                    <!-- =================================================
+                         FOOTER
+                         ================================================= -->
+
+                    <footer class="login-footer">
 
                         <span>
-                            <i></i>
-                            Sessão protegida
+                            SmartEdu
                         </span>
+
+                        <i>â€¢</i>
 
                         <span>
-                            <i></i>
-                            Comunicação segura
+                            Sistema de GestÃ£o Escolar
                         </span>
 
-                        <span>
-                            <i></i>
-                            Controlo de acesso ativo
-                        </span>
-
-                    </div>
+                    </footer>
 
                 </div>
 
-
-                <!-- AUTH FOOTER -->
-
-                <div class="auth-card-footer">
-
-                    <span>
-                        Acesso exclusivo a utilizadores autorizados.
-                    </span>
-
-                    <span class="institution-code">
-                        SMARTEDU / AUTH
-                    </span>
-
-                </div>
-
-            </div>
+            </section>
 
         </section>
 
-
-        <footer class="authentication-footer">
-
-            <span>
-                SmartEdu Access
-            </span>
-
-            <span>
-                Plataforma Institucional
-            </span>
-
-            <span>
-                Status: Operational
-            </span>
-
-        </footer>
-
     </main>
 
-</div>
+
+    <!-- =========================================================
+         JAVASCRIPT
+         ========================================================= -->
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const intro =
+                document.getElementById("pageIntro");
+
+            const shell =
+                document.getElementById("authShell");
+
+            const form =
+                document.getElementById("loginForm");
+
+            const email =
+                document.getElementById("email");
+
+            const password =
+                document.getElementById("password");
+
+            const toggle =
+                document.getElementById("passwordToggle");
+
+            const button =
+                document.getElementById("loginButton");
+
+            const message =
+                document.getElementById("loginMessage");
 
 
-<script>
+            /* =====================================================
+               ENTRADA CINEMATOGRÃFICA
+               ===================================================== */
 
-(function () {
+            window.setTimeout(() => {
 
-    const password =
-        document.getElementById("password");
+                intro.classList.add("intro-finished");
 
-    const toggle =
-        document.getElementById("passwordToggle");
+                shell.classList.add("shell-visible");
 
-    const toggleText =
-        document.getElementById("passwordToggleText");
-
-    const form =
-        document.querySelector(".authentication-form");
-
-    const button =
-        document.getElementById("loginButton");
+            }, 1200);
 
 
-    toggle?.addEventListener(
-        "click",
-        function () {
+            window.setTimeout(() => {
 
-            const visible =
-                password.type === "text";
+                intro.style.display = "none";
 
-            password.type =
-                visible
-                    ? "password"
-                    : "text";
-
-            toggleText.textContent =
-                visible
-                    ? "SHOW"
-                    : "HIDE";
-
-        }
-    );
+            }, 2100);
 
 
-    form?.addEventListener(
-        "submit",
-        function () {
+            /* =====================================================
+               PASSWORD
+               ===================================================== */
 
-            if (!button) {
-                return;
+            toggle.addEventListener("click", () => {
+
+                const visible =
+                    password.type === "text";
+
+                password.type =
+                    visible
+                        ? "password"
+                        : "text";
+
+                toggle.textContent =
+                    visible
+                        ? "Mostrar"
+                        : "Ocultar";
+
+                toggle.setAttribute(
+                    "aria-label",
+                    visible
+                        ? "Mostrar palavra-passe"
+                        : "Ocultar palavra-passe"
+                );
+
+            });
+
+
+            /* =====================================================
+               MENSAGENS
+               ===================================================== */
+
+            function showMessage(
+                text,
+                type = "error"
+            ) {
+
+                message.textContent = text;
+
+                message.className =
+                    `login-message ${type}`;
+
             }
 
-            button.classList.add("loading");
 
-            button.querySelector(
-                ".button-status"
-            ).textContent = "WAIT";
+            function clearMessage() {
 
-        }
-    );
+                message.textContent = "";
+
+                message.className =
+                    "login-message";
+
+            }
 
 
-    document.addEventListener(
-        "keydown",
-        function (event) {
+            /* =====================================================
+               LOADING
+               ===================================================== */
+
+            function setLoading(loading) {
+
+                button.disabled = loading;
+
+                button.classList.toggle(
+                    "loading",
+                    loading
+                );
+
+                if (loading) {
+
+                    button.querySelector(
+                        ".button-label"
+                    ).textContent =
+                        "A autenticar...";
+
+                } else {
+
+                    button.querySelector(
+                        ".button-label"
+                    ).textContent =
+                        "Entrar no sistema";
+
+                }
+
+            }
+
+
+            /* =====================================================
+               LOGIN
+               ===================================================== */
+
+            form.addEventListener(
+                "submit",
+                async (event) => {
+
+                    event.preventDefault();
+
+                    clearMessage();
+
+
+                    const emailValue =
+                        email.value.trim();
+
+                    const passwordValue =
+                        password.value;
+
+
+                    if (!emailValue) {
+
+                        showMessage(
+                            "Introduza o seu email."
+                        );
+
+                        email.focus();
+
+                        return;
+
+                    }
+
+
+                    if (!passwordValue) {
+
+                        showMessage(
+                            "Introduza a sua palavra-passe."
+                        );
+
+                        password.focus();
+
+                        return;
+
+                    }
+
+
+                    setLoading(true);
+
+
+                    try {
+
+                        const response =
+                            await fetch(
+                                "/api/v1/auth/login",
+                                {
+                                    method: "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json",
+
+                                        "Accept":
+                                            "application/json"
+                                    },
+
+                                    credentials:
+                                        "same-origin",
+
+                                    body:
+                                        JSON.stringify({
+                                            email:
+                                                emailValue,
+
+                                            password:
+                                                passwordValue
+                                        })
+                                }
+                            );
+
+
+                        let data = {};
+
+                        try {
+
+                            data =
+                                await response.json();
+
+                        } catch (_) {
+
+                            data = {};
+
+                        }
+
+
+                        if (!response.ok) {
+
+                            showMessage(
+                                data.message ||
+                                "Dados de login invÃ¡lidos."
+                            );
+
+                            return;
+
+                        }
+
+
+                        if (!data.success) {
+
+                            showMessage(
+                                data.message ||
+                                "NÃ£o foi possÃ­vel iniciar a sessÃ£o."
+                            );
+
+                            return;
+
+                        }
+
+
+                        showMessage(
+                            "Login efetuado com sucesso.",
+                            "success"
+                        );
+
+
+                        window.setTimeout(() => {
+
+                            window.location.href =
+                                "/dashboard";
+
+                        }, 450);
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "SmartEdu Login:",
+                            error
+                        );
+
+                        showMessage(
+                            "NÃ£o foi possÃ­vel comunicar com o SmartEdu."
+                        );
+
+                    } finally {
+
+                        setLoading(false);
+
+                    }
+
+                }
+            );
+
+
+            /* =====================================================
+               LIMPAR MENSAGEM AO ESCREVER
+               ===================================================== */
+
+            email.addEventListener(
+                "input",
+                clearMessage
+            );
+
+            password.addEventListener(
+                "input",
+                clearMessage
+            );
+
+
+            /* =====================================================
+               PARALLAX DO BANNER
+               ===================================================== */
+
+            const hero =
+                document.querySelector(
+                    ".hero-panel"
+                );
+
 
             if (
-                event.key === "Enter" &&
-                document.activeElement !== password &&
-                document.activeElement !==
-                    document.getElementById("email")
+                window.matchMedia(
+                    "(pointer: fine)"
+                ).matches
             ) {
-                return;
+
+                hero.addEventListener(
+                    "mousemove",
+                    (event) => {
+
+                        const rect =
+                            hero.getBoundingClientRect();
+
+                        const x =
+                            (
+                                event.clientX -
+                                rect.left
+                            ) / rect.width;
+
+                        const y =
+                            (
+                                event.clientY -
+                                rect.top
+                            ) / rect.height;
+
+
+                        const moveX =
+                            (x - 0.5) * 10;
+
+                        const moveY =
+                            (y - 0.5) * 8;
+
+
+                        hero.style.setProperty(
+                            "--mouse-x",
+                            `${moveX}px`
+                        );
+
+                        hero.style.setProperty(
+                            "--mouse-y",
+                            `${moveY}px`
+                        );
+
+                    }
+                );
+
+
+                hero.addEventListener(
+                    "mouseleave",
+                    () => {
+
+                        hero.style.setProperty(
+                            "--mouse-x",
+                            "0px"
+                        );
+
+                        hero.style.setProperty(
+                            "--mouse-y",
+                            "0px"
+                        );
+
+                    }
+                );
+
             }
 
-        }
-    );
+        });
 
-})();
-
-</script>
+    </script>
 
 </body>
+
 </html>
+
+

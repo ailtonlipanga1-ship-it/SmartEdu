@@ -1,43 +1,36 @@
-# Ambiente Python
 venv/
-.venv/
-env/
-ENV/
 __pycache__/
-*.py[cod]
+*.pyc
+*.pyo
+*.pyd
 
-# Variáveis e segredos
 .env
 .env.*
 !.env.example
 
-# Banco de dados local
+instance/
 *.db
 *.sqlite
 *.sqlite3
 
-# Logs
-logs/
-*.log
-
-# Uploads
-uploads/
-
-# Testes/cache
 .pytest_cache/
-.mypy_cache/
 .coverage
 htmlcov/
 
-# IDE
-.vscode/
-.idea/
+*.log
 
-# Sistema
-.DS_Store
-Thumbs.db
+app_backup_*.py
+appp.py
+estrutura.txt
+estrutura_smartedu.txt
+cls
+dir
 
-# Arquivos temporários
-*.tmp
-*.temp
-*.swp
+backup_smartedu/
+backup_antes_integracao_*/
+
+*.backup
+*.backup2
+
+static/css/*.backup
+static/css/*.backup2

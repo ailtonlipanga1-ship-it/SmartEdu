@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SmartEdu | Relatórios</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Segoe UI,Arial;background:#f4f7fb;color:#172033}
+.header{height:72px;background:#fff;border-bottom:1px solid #e5eaf1;display:flex;align-items:center;justify-content:space-between;padding:0 32px}
+.brand{display:flex;gap:12px;align-items:center;font-size:21px;font-weight:800}
+.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;display:grid;place-items:center}
+.container{max-width:1400px;margin:auto;padding:30px}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+h1{font-size:30px}.muted{color:#718096;margin-top:6px}
+.btn{border:0;border-radius:10px;padding:11px 17px;font-weight:700;cursor:pointer}
+.light{background:#eef2f7;color:#334155}.primary{background:#2563eb;color:#fff}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:25px}
+.card{background:#fff;border:1px solid #e5eaf1;border-radius:18px;padding:22px;box-shadow:0 12px 35px #0f172a10}
+.card span{color:#718096;font-size:14px}.card strong{font-size:30px;display:block;margin-top:8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.panel{background:#fff;border:1px solid #e5eaf1;border-radius:18px;overflow:hidden;box-shadow:0 12px 35px #0f172a10}
+.panel h2{font-size:18px;padding:20px;border-bottom:1px solid #e5eaf1}
+.content{padding:22px}
+.row{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid #edf0f4}
+.row:last-child{border-bottom:0}
+.bar{height:12px;background:#e8edf3;border-radius:20px;overflow:hidden;margin-top:8px}
+.fill{height:100%;background:#2563eb;border-radius:20px}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+@media(max-width:600px){.cards{grid-template-columns:1fr}}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+<div class="brand"><div class="logo">S</div>SmartEdu</div>
+<button class="btn light" onclick="location.href='/dashboard/'">Dashboard</button>
+</header>
+
+<main class="container">
+
+<div class="head">
+<div>
+<h1>Relatórios</h1>
+<p class="muted">Visão consolidada da atividade do SmartEdu.</p>
+</div>
+<button class="btn primary" onclick="load()">↻ Atualizar</button>
+</div>
+
+<div class="cards">
+<div class="card"><span>Alunos</span><strong id="students">0</strong></div>
+<div class="card"><span>Professores</span><strong id="teachers">0</strong></div>
+<div class="card"><span>Cartões RFID</span><strong id="cards">0</strong></div>
+<div class="card"><span>Eventos RFID</span><strong id="events">0</strong></div>
+</div>
+
+<div class="grid">
+
+<section class="panel">
+<h2>Acessos</h2>
+<div class="content">
+<div class="row"><span>Total</span><strong id="accessTotal">0</strong></div>
+<div class="row"><span>Autorizados</span><strong id="granted">0</strong></div>
+<div class="row"><span>Negados</span><strong id="denied">0</strong></div>
+
+<div style="margin-top:20px">
+<strong>Taxa de autorização</strong>
+<div class="bar"><div id="rateBar" class="fill" style="width:0%"></div></div>
+<p id="rate" class="muted">0%</p>
+</div>
+</div>
+</section>
+
+<section class="panel">
+<h2>Presença</h2>
+<div class="content">
+<div class="row"><span>Total de registos</span><strong id="attendance">0</strong></div>
+<div class="row"><span>Presentes</span><strong id="present">0</strong></div>
+<div class="row"><span>Ausentes</span><strong id="absent">0</strong></div>
+<div class="row"><span>Atrasados</span><strong id="late">0</strong></div>
+</div>
+</section>
+
+<section class="panel">
+<h2>Infraestrutura</h2>
+<div class="content">
+<div class="row"><span>Salas</span><strong id="rooms">0</strong></div>
+<div class="row"><span>Dispositivos</span><strong id="devices">0</strong></div>
+<div class="row"><span>Dispositivos online</span><strong id="online">0</strong></div>
+</div>
+</section>
+
+<section class="panel">
+<h2>Estado do sistema</h2>
+<div class="content">
+<div class="row"><span>Estado da API</span><strong id="api">A verificar...</strong></div>
+<div class="row"><span>Base de dados</span><strong id="database">A verificar...</strong></div>
+<div class="row"><span>Última atualização</span><strong id="updated">—</strong></div>
+</div>
+</section>
+
+</div>
+</main>
+
+<script>
+
+async function getJSON(url){
+const r=await fetch(url,{credentials:"same-origin"});
+const d=await r.json();
+if(!r.ok)throw Error(d.message||d.error||"Erro");
+return d;
+}
+
+function data(x){
+return x?.data||x||{};
+}
+
+async function load(){
+
+try{
+
+const overview=await getJSON("/api/v1/reports/overview");
+const access=await getJSON("/api/v1/reports/access");
+const attendance=await getJSON("/api/v1/reports/attendance");
+
+const o=data(overview);
+const a=data(access);
+const at=data(attendance);
+
+const s=o.statistics||o;
+
+document.getElementById("students").textContent=s.students??0;
+document.getElementById("teachers").textContent=s.teachers??0;
+document.getElementById("cards").textContent=s.cards??0;
+document.getElementById("events").textContent=s.access_logs??a.total??0;
+
+const total=a.total??a.events??0;
+const granted=a.granted??0;
+const denied=a.denied??0;
+const rate=total?(granted/total)*100:0;
+
+document.getElementById("accessTotal").textContent=total;
+document.getElementById("granted").textContent=granted;
+document.getElementById("denied").textContent=denied;
+document.getElementById("rate").textContent=rate.toFixed(1)+"%";
+document.getElementById("rateBar").style.width=rate+"%";
+
+document.getElementById("attendance").textContent=at.total??0;
+document.getElementById("present").textContent=at.present??0;
+document.getElementById("absent").textContent=at.absent??0;
+document.getElementById("late").textContent=at.late??0;
+
+document.getElementById("rooms").textContent=s.rooms??0;
+document.getElementById("devices").textContent=s.devices??0;
+
+try{
+const dashboard=await getJSON("/dashboard/api");
+const ds=data(dashboard);
+document.getElementById("online").textContent=ds.devices?.online??0;
+}catch{
+document.getElementById("online").textContent="—";
+}
+
+document.getElementById("api").textContent="Operacional";
+document.getElementById("database").textContent="Operacional";
+document.getElementById("updated").textContent=new Date().toLocaleString("pt-PT");
+
+}catch(e){
+
+console.error(e);
+document.getElementById("api").textContent="Erro";
+document.getElementById("database").textContent="Verificar";
+
+}
+
+}
+
+load();
+setInterval(load,60000);
+
+</script>
+</body>
+</html>
