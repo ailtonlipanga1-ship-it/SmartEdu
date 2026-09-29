@@ -21,7 +21,7 @@ def env(name: str, default: Any = None) -> Any:
 
     value = value.strip()
 
-    if value == "":
+    if not value:
         return default
 
     return value
@@ -53,7 +53,10 @@ def env_int(name: str, default: int) -> int:
         return default
 
 
-def env_list(name: str, default: list[str] | None = None) -> list[str]:
+def env_list(
+    name: str,
+    default: list[str] | None = None,
+) -> list[str]:
     value = env(name)
 
     if value is None:
@@ -66,20 +69,59 @@ def env_list(name: str, default: list[str] | None = None) -> list[str]:
     ]
 
 
-def normalize_database_url(url: str | None) -> str | None:
+def normalize_database_url(
+    url: str | None,
+) -> str | None:
+    """
+    Normaliza a DATABASE_URL para utilização
+    com SQLAlchemy + PostgreSQL.
+
+    Render normalmente fornece:
+        postgresql://...
+
+    O SmartEdu utilizará:
+        postgresql+psycopg2://...
+
+    Também suporta:
+        postgres://...
+        postgresql+psycopg://...
+        postgresql+psycopg2://...
+    """
+
     if not url:
         return None
 
     url = url.strip()
 
     if url.startswith("postgres://"):
-        url = "postgresql://" + url[len("postgres://"):]
+        return (
+            "postgresql+psycopg2://"
+            + url[len("postgres://"):]
+        )
+
+    if url.startswith("postgresql+psycopg2://"):
+        return url
+
+    if url.startswith("postgresql+psycopg://"):
+        return (
+            "postgresql+psycopg2://"
+            + url[len("postgresql+psycopg://"):]
+        )
+
+    if url.startswith("postgresql://"):
+        return (
+            "postgresql+psycopg2://"
+            + url[len("postgresql://"):]
+        )
 
     return url
 
 
 class Config:
-    APP_ENV = env("APP_ENV", "development").lower()
+    APP_ENV = env(
+        "APP_ENV",
+        "development",
+    ).lower()
 
     SECRET_KEY = env(
         "SECRET_KEY",
@@ -97,8 +139,10 @@ class Config:
 
     if DATABASE_URL:
         SQLALCHEMY_DATABASE_URI = DATABASE_URL
+
     elif APP_ENV == "production":
         SQLALCHEMY_DATABASE_URI = ""
+
     else:
         SQLALCHEMY_DATABASE_URI = (
             "sqlite:///"
@@ -126,7 +170,9 @@ class Config:
         days=7
     )
 
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+    MAX_CONTENT_LENGTH = (
+        16 * 1024 * 1024
+    )
 
     JSON_SORT_KEYS = False
 
@@ -196,11 +242,11 @@ class Config:
             )
 
         if not cls.DATABASE_URL.startswith(
-            "postgresql://"
+            "postgresql+psycopg2://"
         ):
             raise RuntimeError(
                 "Em produção, DATABASE_URL deve "
-                "apontar para PostgreSQL."
+                "usar PostgreSQL com psycopg2."
             )
 
 
