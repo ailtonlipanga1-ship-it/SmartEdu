@@ -3,6 +3,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 from typing import Generator
 
+from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
@@ -16,6 +17,25 @@ db = SQLAlchemy(
 )
 
 migrate = Migrate()
+
+
+def init_database(app: Flask) -> None:
+    db.init_app(app)
+    migrate.init_app(app, db)
+
+    with app.app_context():
+        import models  # noqa: F401
+
+        db.create_all()
+
+        app.logger.info(
+            "SMARTEDU DATABASE INITIALIZATION: OK"
+        )
+
+        app.logger.info(
+            "SMARTEDU DATABASE ENGINE: %s",
+            db.engine.name,
+        )
 
 
 @contextmanager

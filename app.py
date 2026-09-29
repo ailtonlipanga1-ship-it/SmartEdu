@@ -8,9 +8,11 @@ from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
+from sqlalchemy import text
 
-from config import Config
+from config import get_config
 from database import db
+from database.database import init_database
 
 
 # ============================================================
@@ -32,7 +34,7 @@ def configure_logging(app: Flask) -> None:
 
     log_level_name = os.getenv(
         "SMARTEDU_LOG_LEVEL",
-        "INFO",
+        app.config.get("LOG_LEVEL", "INFO"),
     ).upper()
 
     log_level = getattr(
@@ -46,24 +48,33 @@ def configure_logging(app: Flask) -> None:
         "%(name)s | %(message)s"
     )
 
-    file_handler = RotatingFileHandler(
-        LOG_DIR / "smartedu.log",
-        maxBytes=5 * 1024 * 1024,
-        backupCount=5,
-        encoding="utf-8",
-    )
-
-    file_handler.setLevel(log_level)
-    file_handler.setFormatter(formatter)
+    app.logger.handlers.clear()
 
     console_handler = logging.StreamHandler()
     console_handler.setLevel(log_level)
     console_handler.setFormatter(formatter)
 
-    app.logger.handlers.clear()
-
-    app.logger.addHandler(file_handler)
     app.logger.addHandler(console_handler)
+
+    # Em ambientes onde o filesystem é persistente,
+    # também mantemos o ficheiro local de log.
+    try:
+        file_handler = RotatingFileHandler(
+            LOG_DIR / "smartedu.log",
+            maxBytes=5 * 1024 * 1024,
+            backupCount=5,
+            encoding="utf-8",
+        )
+
+        file_handler.setLevel(log_level)
+        file_handler.setFormatter(formatter)
+
+        app.logger.addHandler(file_handler)
+
+    except OSError:
+        app.logger.warning(
+            "Não foi possível activar o ficheiro de log."
+        )
 
     app.logger.setLevel(log_level)
 
@@ -79,25 +90,19 @@ def configure_logging(app: Flask) -> None:
 def configure_cors(app: Flask) -> None:
     """Configura CORS para as APIs do SmartEdu."""
 
-    allowed_origins = os.getenv(
-        "SMARTEDU_CORS_ORIGINS",
-        "*",
+    allowed_origins = app.config.get(
+        "CORS_ORIGINS",
+        ["*"],
     )
 
-    if allowed_origins == "*":
-        origins = "*"
-    else:
-        origins = [
-            origin.strip()
-            for origin in allowed_origins.split(",")
-            if origin.strip()
-        ]
+    if not allowed_origins:
+        allowed_origins = ["*"]
 
     CORS(
         app,
         resources={
             r"/api/*": {
-                "origins": origins,
+                "origins": allowed_origins,
                 "supports_credentials": True,
             }
         },
@@ -109,12 +114,16 @@ def configure_cors(app: Flask) -> None:
 # ============================================================
 
 def configure_rate_limiting(app: Flask) -> None:
-    """
-    Configura Flask-Limiter quando a dependência estiver instalada.
+    """Configura Flask-Limiter."""
 
-    Caso Flask-Limiter não esteja disponível, a aplicação
-    continua funcional.
-    """
+    if not app.config.get(
+        "RATELIMIT_ENABLED",
+        True,
+    ):
+        app.logger.info(
+            "Rate limiting desactivado."
+        )
+        return
 
     try:
         from flask_limiter import Limiter
@@ -136,13 +145,12 @@ def configure_rate_limiting(app: Flask) -> None:
         app.extensions["limiter"] = limiter
 
         app.logger.info(
-            "Rate limiting ativado."
+            "Rate limiting activado."
         )
 
     except ImportError:
         app.logger.warning(
-            "Flask-Limiter nao instalado. "
-            "Rate limiting avancado desativado."
+            "Flask-Limiter não está disponível."
         )
 
 
@@ -156,7 +164,7 @@ def error_response(
     *,
     code: str | None = None,
 ):
-    """Cria respostas JSON padronizadas para erros de API."""
+    """Cria respostas JSON padronizadas."""
 
     payload = {
         "success": False,
@@ -175,12 +183,7 @@ def error_response(
 # ============================================================
 
 def register_blueprints(app: Flask) -> None:
-    """
-    Regista os módulos principais do SmartEdu.
-
-    Os imports ficam dentro desta função para reduzir
-    problemas de importação circular.
-    """
+    """Regista os módulos principais do SmartEdu."""
 
     from routes.auth import auth_bp
     from routes.students import students_bp
@@ -193,7 +196,6 @@ def register_blueprints(app: Flask) -> None:
     from routes.monitoring import monitoring_bp
     from routes.device import device_bp
     from routes.devices import devices_bp
-    
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(students_bp)
@@ -207,7 +209,6 @@ def register_blueprints(app: Flask) -> None:
     app.register_blueprint(device_bp)
     app.register_blueprint(devices_bp)
 
-
     app.logger.info(
         "Blueprints SmartEdu registados."
     )
@@ -218,38 +219,22 @@ def register_blueprints(app: Flask) -> None:
 # ============================================================
 
 def register_core_routes(app: Flask) -> None:
-    """
-    Regista as rotas centrais da aplicação.
-
-    A raiz "/" é a entrada web do sistema.
-    As rotas "/health" e "/api/*" permanecem como endpoints API.
-    """
+    """Regista as rotas centrais."""
 
     @app.get("/")
     def index():
-        """
-        Página inicial do SmartEdu.
-
-        Se o utilizador já estiver autenticado,
-        a interface pode seguir directamente para o dashboard.
-        """
-
         return render_template(
             "login.html"
         )
 
     @app.get("/login")
     def login_page():
-        """Página web de autenticação."""
-
         return render_template(
             "login.html"
         )
 
     @app.get("/health")
     def health():
-        """Health check principal."""
-
         return jsonify(
             {
                 "success": True,
@@ -261,8 +246,6 @@ def register_core_routes(app: Flask) -> None:
 
     @app.get("/api/health")
     def api_health():
-        """Health check da API."""
-
         return jsonify(
             {
                 "success": True,
@@ -274,8 +257,6 @@ def register_core_routes(app: Flask) -> None:
 
     @app.get("/api/v1/health")
     def api_v1_health():
-        """Health check da API v1."""
-
         return jsonify(
             {
                 "success": True,
@@ -287,20 +268,20 @@ def register_core_routes(app: Flask) -> None:
 
     @app.get("/api/v1/system/status")
     def system_status():
-        """Verifica o estado interno da aplicação e da base de dados."""
+        """Verifica aplicação e PostgreSQL."""
 
         database_status = "unknown"
 
         try:
             db.session.execute(
-                db.text("SELECT 1")
+                text("SELECT 1")
             )
 
             database_status = "online"
 
         except Exception as exc:
             app.logger.error(
-                "Falha na verificacao da base de dados: %s",
+                "Falha na base de dados: %s",
                 exc,
             )
 
@@ -318,6 +299,11 @@ def register_core_routes(app: Flask) -> None:
                 "application": "SmartEdu Access",
                 "status": application_status,
                 "database": database_status,
+                "database_engine": (
+                    db.engine.name
+                    if database_status == "online"
+                    else None
+                ),
                 "timestamp": datetime.utcnow().isoformat(),
             }
         )
@@ -327,14 +313,8 @@ def register_core_routes(app: Flask) -> None:
 # SECURITY HEADERS
 # ============================================================
 
-app_headers_enabled = True
-
-
 def apply_security_headers(response):
     """Aplica headers HTTP de segurança."""
-
-    if not app_headers_enabled:
-        return response
 
     response.headers.setdefault(
         "X-Content-Type-Options",
@@ -364,7 +344,7 @@ def apply_security_headers(response):
 # ============================================================
 
 def register_middleware(app: Flask) -> None:
-    """Regista middleware global da aplicação."""
+    """Regista middleware global."""
 
     @app.before_request
     def before_request():
@@ -403,14 +383,8 @@ def register_error_handlers(app: Flask) -> None:
 
     @app.errorhandler(400)
     def bad_request(error):
-        app.logger.warning(
-            "400 %s %s",
-            request.method,
-            request.path,
-        )
-
         return error_response(
-            "Pedido invalido.",
+            "Pedido inválido.",
             400,
             code="BAD_REQUEST",
         )
@@ -418,7 +392,7 @@ def register_error_handlers(app: Flask) -> None:
     @app.errorhandler(401)
     def unauthorized(error):
         return error_response(
-            "Autenticacao necessaria.",
+            "Autenticação necessária.",
             401,
             code="UNAUTHORIZED",
         )
@@ -426,27 +400,22 @@ def register_error_handlers(app: Flask) -> None:
     @app.errorhandler(403)
     def forbidden(error):
         return error_response(
-            "Acesso nao autorizado.",
+            "Acesso não autorizado.",
             403,
             code="FORBIDDEN",
         )
 
     @app.errorhandler(404)
     def not_found(error):
-        """
-        Para páginas HTML inexistentes, mantém resposta JSON
-        apenas quando a requisição é claramente de API.
-        """
-
         if request.path.startswith("/api/"):
             return error_response(
-                "Recurso nao encontrado.",
+                "Recurso não encontrado.",
                 404,
                 code="NOT_FOUND",
             )
 
         return error_response(
-            "Recurso nao encontrado.",
+            "Recurso não encontrado.",
             404,
             code="NOT_FOUND",
         )
@@ -454,7 +423,7 @@ def register_error_handlers(app: Flask) -> None:
     @app.errorhandler(405)
     def method_not_allowed(error):
         return error_response(
-            "Metodo HTTP nao permitido.",
+            "Método HTTP não permitido.",
             405,
             code="METHOD_NOT_ALLOWED",
         )
@@ -462,7 +431,7 @@ def register_error_handlers(app: Flask) -> None:
     @app.errorhandler(429)
     def too_many_requests(error):
         return error_response(
-            "Demasiadas solicitacoes. "
+            "Demasiadas solicitações. "
             "Tente novamente mais tarde.",
             429,
             code="RATE_LIMITED",
@@ -488,7 +457,7 @@ def register_error_handlers(app: Flask) -> None:
     @app.errorhandler(Exception)
     def unhandled_exception(error):
         app.logger.exception(
-            "Excecao nao tratada: %s",
+            "Exceção não tratada: %s",
             error,
         )
 
@@ -509,29 +478,26 @@ def register_error_handlers(app: Flask) -> None:
 # ============================================================
 
 def configure_session(app: Flask) -> None:
-    """Configura as sessões do Flask."""
+    """Configura as sessões Flask."""
 
-    app.config.setdefault(
-        "SESSION_COOKIE_HTTPONLY",
-        True,
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+
+    app.config["SESSION_COOKIE_SAMESITE"] = (
+        "Lax"
     )
 
-    app.config.setdefault(
-        "SESSION_COOKIE_SAMESITE",
-        "Lax",
-    )
-
-    app.config.setdefault(
-        "SESSION_COOKIE_SECURE",
-        os.getenv(
+    app.config["SESSION_COOKIE_SECURE"] = (
+        app.config.get(
             "SESSION_COOKIE_SECURE",
-            "false",
-        ).lower() == "true",
+            False,
+        )
     )
 
-    app.config.setdefault(
-        "PERMANENT_SESSION_LIFETIME",
-        60 * 60 * 12,
+    app.config["PERMANENT_SESSION_LIFETIME"] = (
+        app.config.get(
+            "PERMANENT_SESSION_LIFETIME",
+            60 * 60 * 24 * 7,
+        )
     )
 
 
@@ -540,35 +506,12 @@ def configure_session(app: Flask) -> None:
 # ============================================================
 
 def configure_application(app: Flask) -> None:
-    """Configura parâmetros gerais da aplicação."""
+    """Configura parâmetros gerais."""
 
-    app.config.setdefault(
-        "JSON_SORT_KEYS",
-        False,
-    )
+    app.config["JSON_SORT_KEYS"] = False
 
-    app.config.setdefault(
-        "JSON_AS_ASCII",
-        False,
-    )
-
-    app.config.setdefault(
-        "SMARTEDU_VERSION",
-        "1.0.0",
-    )
-
-
-# ============================================================
-# DATABASE
-# ============================================================
-
-def initialize_database(app: Flask) -> None:
-    """Inicializa SQLAlchemy."""
-
-    db.init_app(app)
-
-    app.logger.info(
-        "SQLAlchemy inicializado."
+    app.config["SMARTEDU_VERSION"] = (
+        "1.0.0"
     )
 
 
@@ -603,53 +546,68 @@ def create_app(config_class=None) -> Flask:
     )
 
     # --------------------------------------------------------
-    # Configuração
+    # CONFIG
     # --------------------------------------------------------
 
     if config_class is None:
-        config_class = Config
+        config_class = get_config()
 
     app.config.from_object(
         config_class
     )
+
     database_uri = app.config.get(
         "SQLALCHEMY_DATABASE_URI",
         "",
     )
 
-    if database_uri.startswith(
-        ("postgresql://", "postgres://")
-    ):
-        app.logger.info(
-            "SMARTEDU DATABASE: POSTGRESQL"
-        )
-    elif database_uri.startswith("sqlite://"):
-        app.logger.warning(
-            "SMARTEDU DATABASE: SQLITE"
-        )
-    else:
-        app.logger.warning(
-            "SMARTEDU DATABASE: OUTRO"
-        )
-
-    configure_application(app)
-    configure_session(app)
-
     # --------------------------------------------------------
-    # Logging
+    # LOGGING
     # --------------------------------------------------------
 
     configure_logging(app)
 
+    # --------------------------------------------------------
+    # DATABASE IDENTIFICATION
+    # --------------------------------------------------------
+
+    if database_uri.startswith(
+        "postgresql://"
+    ):
+        app.logger.info(
+            "SMARTEDU DATABASE: POSTGRESQL"
+        )
+
+    elif database_uri.startswith(
+        "sqlite://"
+    ):
+        app.logger.warning(
+            "SMARTEDU DATABASE: SQLITE"
+        )
+
+    else:
+        app.logger.error(
+            "SMARTEDU DATABASE: DATABASE "
+            "NÃO CONFIGURADA OU INVÁLIDA"
+        )
+
     app.logger.info(
-        "Inicializando SmartEdu Access..."
+        "SmartEdu Access a iniciar..."
     )
 
     # --------------------------------------------------------
-    # Database
+    # APPLICATION
     # --------------------------------------------------------
 
-    initialize_database(app)
+    configure_application(app)
+
+    configure_session(app)
+
+    # --------------------------------------------------------
+    # DATABASE
+    # --------------------------------------------------------
+
+    init_database(app)
 
     # --------------------------------------------------------
     # CORS
@@ -658,43 +616,43 @@ def create_app(config_class=None) -> Flask:
     configure_cors(app)
 
     # --------------------------------------------------------
-    # Rate limiting
+    # RATE LIMITING
     # --------------------------------------------------------
 
     configure_rate_limiting(app)
 
     # --------------------------------------------------------
-    # Middleware
+    # MIDDLEWARE
     # --------------------------------------------------------
 
     register_middleware(app)
 
     # --------------------------------------------------------
-    # Core routes
+    # CORE ROUTES
     # --------------------------------------------------------
 
     register_core_routes(app)
 
     # --------------------------------------------------------
-    # Blueprints
+    # BLUEPRINTS
     # --------------------------------------------------------
 
     register_blueprints(app)
 
     # --------------------------------------------------------
-    # Template context
+    # TEMPLATE CONTEXT
     # --------------------------------------------------------
 
     register_template_context(app)
 
     # --------------------------------------------------------
-    # Error handlers
+    # ERROR HANDLERS
     # --------------------------------------------------------
 
     register_error_handlers(app)
 
     # --------------------------------------------------------
-    # Finalização
+    # FINAL
     # --------------------------------------------------------
 
     app.logger.info(
@@ -724,8 +682,11 @@ if __name__ == "__main__":
 
     port = int(
         os.getenv(
-            "FLASK_PORT",
-            "5000",
+            "PORT",
+            os.getenv(
+                "FLASK_PORT",
+                "5000",
+            ),
         )
     )
 
