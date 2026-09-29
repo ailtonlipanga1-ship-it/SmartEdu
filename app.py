@@ -612,6 +612,25 @@ def create_app(config_class=None) -> Flask:
     app.config.from_object(
         config_class
     )
+    database_uri = app.config.get(
+        "SQLALCHEMY_DATABASE_URI",
+        "",
+    )
+
+    if database_uri.startswith(
+        ("postgresql://", "postgres://")
+    ):
+        app.logger.info(
+            "SMARTEDU DATABASE: POSTGRESQL"
+        )
+    elif database_uri.startswith("sqlite://"):
+        app.logger.warning(
+            "SMARTEDU DATABASE: SQLITE"
+        )
+    else:
+        app.logger.warning(
+            "SMARTEDU DATABASE: OUTRO"
+        )
 
     configure_application(app)
     configure_session(app)
