@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta
 
@@ -25,16 +25,16 @@ from models import (
 
 PERMISSIONS = [
     ("Administrador", "admin"),
-    ("Gestão de utilizadores", "users.manage"),
-    ("Gestão de estudantes", "students.manage"),
-    ("Gestão de professores", "teachers.manage"),
-    ("Gestão de cartões RFID", "cards.manage"),
-    ("Gestão de dispositivos", "devices.manage"),
-    ("Gestão de salas", "rooms.manage"),
-    ("Gestão de presenças", "attendance.manage"),
-    ("Gestão de acessos", "access.manage"),
-    ("Visualização de relatórios", "reports.view"),
-    ("Gestão de configurações", "settings.manage"),
+    ("GestÃ£o de utilizadores", "users.manage"),
+    ("GestÃ£o de estudantes", "students.manage"),
+    ("GestÃ£o de professores", "teachers.manage"),
+    ("GestÃ£o de cartÃµes RFID", "cards.manage"),
+    ("GestÃ£o de dispositivos", "devices.manage"),
+    ("GestÃ£o de salas", "rooms.manage"),
+    ("GestÃ£o de presenÃ§as", "attendance.manage"),
+    ("GestÃ£o de acessos", "access.manage"),
+    ("VisualizaÃ§Ã£o de relatÃ³rios", "reports.view"),
+    ("GestÃ£o de configuraÃ§Ãµes", "settings.manage"),
     ("Auditoria do sistema", "audit.view"),
 ]
 
@@ -69,7 +69,7 @@ def seed_institution():
             "phone": "+258 84 000 0000",
             "address": "Campus SmartEdu",
             "city": "Maputo",
-            "country": "Moçambique",
+            "country": "MoÃ§ambique",
             "active": True,
         },
     )
@@ -86,13 +86,13 @@ def seed_permissions():
             code=code,
             defaults={
                 "name": name,
-                "description": f"Permissão: {name}",
+                "description": f"PermissÃ£o: {name}",
                 "active": True,
             },
         )
 
         permission.name = name
-        permission.description = f"Permissão: {name}"
+        permission.description = f"PermissÃ£o: {name}"
         permission.active = True
 
         permissions[code] = permission
@@ -125,7 +125,7 @@ def seed_admin(institution, permissions):
             failed_login_attempts=0,
         )
 
-        admin.set_password("Admin@12345")
+        admin.set_password("SmartEdu@2026")
 
         db.session.add(admin)
         db.session.flush()
@@ -139,7 +139,7 @@ def seed_admin(institution, permissions):
         admin.verified = True
 
         if not admin.password_hash:
-            admin.set_password("Admin@12345")
+            admin.set_password("SmartEdu@2026")
 
     for permission in permissions.values():
         if permission not in admin.permissions:
@@ -156,7 +156,7 @@ def seed_students(institution):
             "student_number": "STD001",
             "name": "Ana Cristina",
             "email": "ana.cristina@smartedu.local",
-            "course": "Administração de Sistemas de Redes Informáticas",
+            "course": "AdministraÃ§Ã£o de Sistemas de Redes InformÃ¡ticas",
             "class_name": "ASRI-2A",
             "status": "active",
             "rfid_card_id": "RFID-001",
@@ -165,25 +165,25 @@ def seed_students(institution):
             "student_number": "STD002",
             "name": "Carlos Manuel",
             "email": "carlos.manuel@smartedu.local",
-            "course": "Administração de Sistemas de Redes Informáticas",
+            "course": "AdministraÃ§Ã£o de Sistemas de Redes InformÃ¡ticas",
             "class_name": "ASRI-2A",
             "status": "active",
             "rfid_card_id": "RFID-002",
         },
         {
             "student_number": "STD003",
-            "name": "Maria José",
+            "name": "Maria JosÃ©",
             "email": "maria.jose@smartedu.local",
-            "course": "Administração de Sistemas de Redes Informáticas",
+            "course": "AdministraÃ§Ã£o de Sistemas de Redes InformÃ¡ticas",
             "class_name": "ASRI-2B",
             "status": "active",
             "rfid_card_id": "RFID-003",
         },
         {
             "student_number": "STD004",
-            "name": "João Ernesto",
+            "name": "JoÃ£o Ernesto",
             "email": "joao.ernesto@smartedu.local",
-            "course": "Administração de Sistemas de Redes Informáticas",
+            "course": "AdministraÃ§Ã£o de Sistemas de Redes InformÃ¡ticas",
             "class_name": "ASRI-2B",
             "status": "active",
             "rfid_card_id": "RFID-004",
@@ -222,7 +222,7 @@ def seed_teachers(institution):
             "employee_number": "DOC001",
             "name": "Pedro Alberto",
             "email": "pedro.alberto@smartedu.local",
-            "department": "Tecnologias de Informação",
+            "department": "Tecnologias de InformaÃ§Ã£o",
             "status": "active",
         },
         {
@@ -264,7 +264,7 @@ def seed_rooms(institution):
     data = [
         {
             "code": "LAB-01",
-            "name": "Laboratório de Redes",
+            "name": "LaboratÃ³rio de Redes",
             "building": "Bloco A",
             "floor": "1",
             "capacity": 30,
@@ -273,7 +273,7 @@ def seed_rooms(institution):
         },
         {
             "code": "LAB-02",
-            "name": "Laboratório de Programação",
+            "name": "LaboratÃ³rio de ProgramaÃ§Ã£o",
             "building": "Bloco A",
             "floor": "1",
             "capacity": 25,
@@ -282,7 +282,7 @@ def seed_rooms(institution):
         },
         {
             "code": "SALA-01",
-            "name": "Sala de Administração",
+            "name": "Sala de AdministraÃ§Ã£o",
             "building": "Bloco B",
             "floor": "1",
             "capacity": 40,
@@ -327,7 +327,7 @@ def seed_devices(institution, rooms):
         {
             "name": "RFID Gateway LAB-01",
             "type": "rfid_reader",
-            "location": "Laboratório de Redes",
+            "location": "LaboratÃ³rio de Redes",
             "status": "online",
             "ip_address": "192.168.10.101",
             "mac_address": "AA:BB:CC:00:00:01",
@@ -340,7 +340,7 @@ def seed_devices(institution, rooms):
         {
             "name": "RFID Gateway LAB-02",
             "type": "rfid_reader",
-            "location": "Laboratório de Programação",
+            "location": "LaboratÃ³rio de ProgramaÃ§Ã£o",
             "status": "online",
             "ip_address": "192.168.10.102",
             "mac_address": "AA:BB:CC:00:00:02",
@@ -515,7 +515,7 @@ def seed_access_logs(institution, students, cards, devices):
                 device_code=device.name,
                 direction="entry",
                 result="granted",
-                reason="Cartão válido",
+                reason="CartÃ£o vÃ¡lido",
                 timestamp=now - timedelta(minutes=index * 7),
                 metadata_json={
                     "source": "seed",
@@ -531,7 +531,7 @@ def seed_access_logs(institution, students, cards, devices):
             device_code=devices[0].name,
             direction="entry",
             result="denied",
-            reason="Cartão não registado",
+            reason="CartÃ£o nÃ£o registado",
             timestamp=now - timedelta(minutes=35),
             metadata_json={
                 "source": "seed",
@@ -557,8 +557,8 @@ def seed_schedule(institution, teachers, rooms):
             institution_id=institution.id,
             room_id=rooms[0].id,
             teacher_id=teachers[0].id,
-            title="Administração de Sistemas de Redes",
-            course="Administração de Sistemas de Redes Informáticas",
+            title="AdministraÃ§Ã£o de Sistemas de Redes",
+            course="AdministraÃ§Ã£o de Sistemas de Redes InformÃ¡ticas",
             class_name="ASRI-2A",
             weekday=1,
             start_time=time(7, 30),
@@ -572,8 +572,8 @@ def seed_schedule(institution, teachers, rooms):
             institution_id=institution.id,
             room_id=rooms[1].id,
             teacher_id=teachers[1].id,
-            title="Programação Python",
-            course="Administração de Sistemas de Redes Informáticas",
+            title="ProgramaÃ§Ã£o Python",
+            course="AdministraÃ§Ã£o de Sistemas de Redes InformÃ¡ticas",
             class_name="ASRI-2B",
             weekday=3,
             start_time=time(9, 30),
@@ -711,12 +711,12 @@ def seed():
             print("BASE DE DADOS CRIADA COM SUCESSO")
             print("-" * 60)
             print(
-                f"Instituição : {institution.name}"
+                f"InstituiÃ§Ã£o : {institution.name}"
             )
             print(
                 f"Utilizador  : {admin.email}"
             )
-            print("Password    : Admin@12345")
+            print("Password    : SmartEdu@2026")
             print(
                 f"Estudantes  : {len(students)}"
             )
@@ -730,10 +730,10 @@ def seed():
                 f"Dispositivos: {len(devices)}"
             )
             print(
-                f"Cartões RFID: {len(cards)}"
+                f"CartÃµes RFID: {len(cards)}"
             )
             print(
-                f"Permissões  : {len(permissions)}"
+                f"PermissÃµes  : {len(permissions)}"
             )
 
             print()

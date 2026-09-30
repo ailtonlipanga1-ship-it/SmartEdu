@@ -44,6 +44,17 @@ def is_authenticated() -> bool:
 def login_required(view_func):
     @wraps(view_func)
     def wrapped_view(*args, **kwargs):
+        user = get_current_user()
+
+        if user is None:
+            return jsonify(
+                {
+                    "success": False,
+                    "authenticated": False,
+                    "message": "Autenticação necessária.",
+                }
+            ), 401
+
         return view_func(
             *args,
             **kwargs,
@@ -130,3 +141,4 @@ def roles_required(*roles: str):
         return wrapped_view
 
     return decorator
+
