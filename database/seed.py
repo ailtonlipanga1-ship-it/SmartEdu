@@ -137,6 +137,8 @@ def seed_admin(institution, permissions):
         admin.role = "admin"
         admin.active = True
         admin.verified = True
+        admin.failed_login_attempts = 0
+        admin.locked_until = None
 
         if not admin.password_hash:
             admin.set_password("SmartEdu@2026")
@@ -763,3 +765,4 @@ def seed():
 
 if __name__ == "__main__":
     seed()
+
